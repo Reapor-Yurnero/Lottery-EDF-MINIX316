@@ -1,0 +1,5 @@
+depend-gnu:
+	rm .depend-gnu
+	touch .depend-gnu
+	mkdep 'gcc  -E -x assembler-with-cpp -I.' __setjmp.gs | sed -e '/<built-in>/d' -e '/<command line>/d' -e 's:^\(.\):../../obj-gnu/./gnu/rts/\1:' >> .depend-gnu
+	mkdep 'gcc  -E -x assembler-with-cpp -I.' longjmp.gs | sed -e '/<built-in>/d' -e '/<command line>/d' -e 's:^\(.\):../../obj-gnu/./gnu/rts/\1:' >> .depend-gnu

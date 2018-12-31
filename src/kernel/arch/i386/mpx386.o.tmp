@@ -1,0 +1,739 @@
+# 1 "mpx386.S"
+# 3 "./../../kernel.h"
+# 54 "./../../kernel.h"
+# 46 "mpx386.S"
+# 5 "/usr/include/sys/vm_i386.h"
+# 71 "/usr/include/sys/vm_i386.h"
+# 50 "mpx386.S"
+
+
+.text
+begtext:
+
+.rom
+# 59 "mpx386.S"
+begrom:
+.data
+begdata:
+.bss
+begbss:
+# 3 "/usr/include/minix/config.h"
+# 3 "/usr/include/minix/sys_config.h"
+# 43 "/usr/include/minix/sys_config.h"
+# 48 "/usr/include/minix/sys_config.h"
+# 53 "/usr/include/minix/sys_config.h"
+# 61 "/usr/include/minix/sys_config.h"
+# 65 "/usr/include/minix/sys_config.h"
+# 69 "/usr/include/minix/sys_config.h"
+# 24 "/usr/include/minix/config.h"
+# 1 "/usr/include/minix/const.h"
+# 5 "/usr/include/minix/const.h"
+# 81 "/usr/include/minix/const.h"
+# 103 "/usr/include/minix/const.h"
+# 25 "/usr/include/minix/com.h"
+# 43 "/usr/include/minix/com.h"
+# 172 "/usr/include/minix/com.h"
+# 501 "/usr/include/minix/com.h"
+# 525 "/usr/include/minix/com.h"
+# 772 "/usr/include/minix/com.h"
+# 796 "/usr/include/minix/com.h"
+# 808 "/usr/include/minix/com.h"
+# 998 "/usr/include/minix/com.h"
+# 1 "/usr/include/ibm/interrupt.h"
+# 59 "/usr/include/ibm/interrupt.h"
+# 1 "include/archconst.h"
+# 1 "/usr/include/ibm/interrupt.h"
+# 7 "/usr/include/ibm/memory.h"
+# 7 "include/archconst.h"
+# 146 "include/archconst.h"
+# 1 "./../../const.h"
+# 3 "/usr/include/minix/bitmap.h"
+# 7 "./../../const.h"
+# 3 "./../../config.h"
+# 3 "./../../debug.h"
+# 19 "/usr/include/ansi.h"
+# 31 "/usr/include/ansi.h"
+# 56 "/usr/include/ansi.h"
+# 60 "/usr/include/ansi.h"
+# 3 "/usr/include/minix/debug.h"
+# 11 "/usr/include/minix/debug.h"
+# 65 "./../../config.h"
+# 13 "./../../debug.h"
+# 43 "./../../debug.h"
+# 55 "./../../debug.h"
+# 64 "./../../debug.h"
+# 71 "./../../debug.h"
+# 77 "./../../debug.h"
+# 82 "./../../debug.h"
+# 88 "./../../debug.h"
+# 10 "./../../const.h"
+# 27 "./../../const.h"
+# 43 "./../../const.h"
+# 3 "./../../proc.h"
+# 125 "./../../proc.h"
+# 152 "./../../proc.h"
+# 173 "./../../proc.h"
+# 186 "./../../proc.h"
+# 196 "./../../proc.h"
+# 210 "./../../proc.h"
+# 220 "./../../proc.h"
+# 235 "./../../proc.h"
+# 248 "./../../proc.h"
+# 281 "./../../proc.h"
+# 3 "./sconst.h"
+# 1 "./../../const.h"
+# 5 "./sconst.h"
+
+
+	W =   4
+
+
+	P_STACKBASE = 0
+	GSREG = P_STACKBASE
+	FSREG = GSREG+2
+	ESREG = FSREG+2
+	DSREG = ESREG+2
+	DIREG = DSREG+2
+	SIREG = DIREG+W
+	BPREG = SIREG+W
+	STREG = BPREG+W
+	BXREG = STREG+W
+	DXREG = BXREG+W
+	CXREG = DXREG+W
+	AXREG = CXREG+W
+	RETADR = AXREG+W
+	PCREG = RETADR+W
+	CSREG = PCREG+W
+	PSWREG = CSREG+W
+	SPREG = PSWREG+W
+	SSREG = SPREG+W
+	P_STACKTOP = SSREG+W
+	FP_SAVE_AREA_P = P_STACKTOP
+	P_LDT_SEL = FP_SAVE_AREA_P + 532
+	P_CR3 = P_LDT_SEL+W
+	P_LDT = P_CR3+W
+	P_MISC_FLAGS = P_LDT + 50
+	Msize = 9
+# 53 "./sconst.h"
+# 73 "./sconst.h"
+# 79 "./sconst.h"
+# 85 "./sconst.h"
+# 97 "./sconst.h"
+# 105 "./sconst.h"
+# 113 "./sconst.h"
+# 137 "./sconst.h"
+# 143 "./sconst.h"
+# 75 "mpx386.S"
+
+
+
+
+
+
+
+
+
+
+
+
+.globl	restart
+.globl reload_cr3
+.globl write_cr3
+
+.globl	divide_error
+.globl	single_step_exception
+.globl	nmi
+.globl	breakpoint_exception
+.globl	overflow
+.globl	bounds_check
+.globl	inval_opcode
+.globl	copr_not_available
+.globl	double_fault
+.globl	copr_seg_overrun
+.globl	inval_tss
+.globl	segment_not_present
+.globl	stack_exception
+.globl	general_protection
+.globl	page_fault
+.globl	copr_error
+.globl  alignment_check
+.globl  machine_check
+.globl  simd_exception
+.globl	params_size
+.globl	params_offset
+.globl	mon_ds
+.globl  schedcheck
+.globl  dirtypde
+.globl  lazy_fpu
+
+.globl	hwint00
+.globl	hwint01
+.globl	hwint02
+.globl	hwint03
+.globl	hwint04
+.globl	hwint05
+.globl	hwint06
+.globl	hwint07
+.globl	hwint08
+.globl	hwint09
+.globl	hwint10
+.globl	hwint11
+.globl	hwint12
+.globl	hwint13
+.globl	hwint14
+.globl	hwint15
+
+.globl	level0_call
+
+
+.globl	begbss
+.globl	begdata
+
+.text
+
+
+
+.global MINIX
+MINIX:
+
+	jmp	over_flags
+.short	 12
+
+flags:
+
+
+
+
+
+
+.short	0x01FD
+	nop
+over_flags:
+
+
+
+	movzwl	%sp, %esp
+	push	%ebp
+	mov	%esp, %ebp
+	push	%esi
+	push	%edi
+	cmp	$0, 4(%ebp)
+	je	noret
+	incl	mon_return
+noret:
+	movl	%esp, mon_sp
+
+
+
+
+	sgdt	gdt+  1  *  8
+	movl	gdt+  1  *  8  +2, %esi
+	mov	$gdt, %ebx
+	mov	$8*8, %ecx
+copygdt:
+	movb    %es:(%esi), %al
+	movb	%al, (%ebx)
+	inc	%esi
+	inc	%ebx
+	loop	copygdt
+	movl	gdt+  3  *  8  +2, %eax
+	and	$0x00FFFFFF, %eax
+	add	$gdt, %eax
+	movl	%eax, gdt+  1  *  8  +2
+	lgdt	gdt+  1  *  8
+
+
+	mov	8(%ebp), %ebx
+	mov	12(%ebp), %edx
+	mov	16(%ebp), %eax
+	movl	%eax, aout
+	mov	%ds, %ax
+	mov	%ax, %es
+	mov	%ax, %fs
+	mov	%ax, %gs
+	mov	%ax, %ss
+	mov	$k_boot_stktop, %esp
+
+
+	movl	%edx, params_size
+	movl	%ebx, params_offset
+	movl	$  5  *  8  , mon_ds
+
+
+	push	%edx
+	push	%ebx
+	push	$  5  *  8
+	push	$  3  *  8
+	push	$  6  *  8
+	call	cstart
+	add	$5*4, %esp
+
+
+
+
+	lgdt	gdt+  1  *  8
+	lidt	gdt+  2  *  8
+
+	ljmp    $  6  *  8  , $csinit
+csinit:
+	movw	$  3  *  8  , %ax
+	mov	%ax, %ds
+	mov	%ax, %es
+	mov	%ax, %fs
+	mov	%ax, %gs
+	mov	%ax, %ss
+	movw	$  10  *  8  , %ax
+	ltr	%ax
+	push	$0
+	popf
+	jmp	main
+# 249 "mpx386.S"
+# 272 "mpx386.S"
+
+
+.balign	16
+hwint00:
+
+	  cmpl $  6  *  8  , 4 (%esp) ; je  0f  ;  ;   push %ebp ; ; movl ( 20  + 4 + 0 )(%esp), %ebp ; ;  mov %ds, %ss:DSREG(%ebp ) ; mov %es, %ss:ESREG(%ebp ) ; mov %fs, %ss:FSREG(%ebp ) ; mov %gs, %ss:GSREG(%ebp ) ;  ;  mov %eax, %ss:AXREG(%ebp ) ; mov %ecx, %ss:CXREG(%ebp ) ; mov %edx, %ss:DXREG(%ebp ) ; mov %ebx, %ss:BXREG(%ebp ) ; mov %esi, %ss:SIREG(%ebp ) ; mov %edi, %ss:DIREG(%ebp ) ;  ; pop %esi ; mov %esi, %ss:BPREG(%ebp) ;  mov %ss, %si ; mov %si, %ds ; mov %si, %es ; movw $0, %si ; mov %si, %gs ; mov %si, %fs ;  ;  movl (0 + 0 )(%esp),  %esi  ; movl  %esi , PCREG( %ebp ) ; movl (4 + 0 )(%esp),  %esi  ; movl  %esi , CSREG( %ebp ) ; movl (8 + 0 )(%esp),  %esi  ; movl  %esi , PSWREG( %ebp ) ; movl (12 + 0 )(%esp),  %esi  ; movl  %esi , SPREG( %ebp ) ; movl  %esi , STREG( %ebp ) ; movl (16 + 0 )(%esp),  %esi  ; movl  %esi , SSREG( %ebp ) ;  ;  ; push %ebp ; call lazy_fpu ; add $4, %esp ;  ; movl $0, %ebp ;  push $0  ; call irq_handle ; add $4, %esp ;  ; movb $ 0x20 , %al ; outb $ 0x20  ; jmp restart ; 0: pusha ;  push $0  ; call irq_handle ; add $4, %esp ;  ; movb $ 0x20 , %al ; outb $ 0x20  ; popa ; iret ;
+
+.balign	16
+hwint01:
+
+	  cmpl $  6  *  8  , 4 (%esp) ; je  0f  ;  ;   push %ebp ; ; movl ( 20  + 4 + 0 )(%esp), %ebp ; ;  mov %ds, %ss:DSREG(%ebp ) ; mov %es, %ss:ESREG(%ebp ) ; mov %fs, %ss:FSREG(%ebp ) ; mov %gs, %ss:GSREG(%ebp ) ;  ;  mov %eax, %ss:AXREG(%ebp ) ; mov %ecx, %ss:CXREG(%ebp ) ; mov %edx, %ss:DXREG(%ebp ) ; mov %ebx, %ss:BXREG(%ebp ) ; mov %esi, %ss:SIREG(%ebp ) ; mov %edi, %ss:DIREG(%ebp ) ;  ; pop %esi ; mov %esi, %ss:BPREG(%ebp) ;  mov %ss, %si ; mov %si, %ds ; mov %si, %es ; movw $0, %si ; mov %si, %gs ; mov %si, %fs ;  ;  movl (0 + 0 )(%esp),  %esi  ; movl  %esi , PCREG( %ebp ) ; movl (4 + 0 )(%esp),  %esi  ; movl  %esi , CSREG( %ebp ) ; movl (8 + 0 )(%esp),  %esi  ; movl  %esi , PSWREG( %ebp ) ; movl (12 + 0 )(%esp),  %esi  ; movl  %esi , SPREG( %ebp ) ; movl  %esi , STREG( %ebp ) ; movl (16 + 0 )(%esp),  %esi  ; movl  %esi , SSREG( %ebp ) ;  ;  ; push %ebp ; call lazy_fpu ; add $4, %esp ;  ; movl $0, %ebp ;  push $1  ; call irq_handle ; add $4, %esp ;  ; movb $ 0x20 , %al ; outb $ 0x20  ; jmp restart ; 0: pusha ;  push $1  ; call irq_handle ; add $4, %esp ;  ; movb $ 0x20 , %al ; outb $ 0x20  ; popa ; iret ;
+
+.balign	16
+hwint02:
+
+	  cmpl $  6  *  8  , 4 (%esp) ; je  0f  ;  ;   push %ebp ; ; movl ( 20  + 4 + 0 )(%esp), %ebp ; ;  mov %ds, %ss:DSREG(%ebp ) ; mov %es, %ss:ESREG(%ebp ) ; mov %fs, %ss:FSREG(%ebp ) ; mov %gs, %ss:GSREG(%ebp ) ;  ;  mov %eax, %ss:AXREG(%ebp ) ; mov %ecx, %ss:CXREG(%ebp ) ; mov %edx, %ss:DXREG(%ebp ) ; mov %ebx, %ss:BXREG(%ebp ) ; mov %esi, %ss:SIREG(%ebp ) ; mov %edi, %ss:DIREG(%ebp ) ;  ; pop %esi ; mov %esi, %ss:BPREG(%ebp) ;  mov %ss, %si ; mov %si, %ds ; mov %si, %es ; movw $0, %si ; mov %si, %gs ; mov %si, %fs ;  ;  movl (0 + 0 )(%esp),  %esi  ; movl  %esi , PCREG( %ebp ) ; movl (4 + 0 )(%esp),  %esi  ; movl  %esi , CSREG( %ebp ) ; movl (8 + 0 )(%esp),  %esi  ; movl  %esi , PSWREG( %ebp ) ; movl (12 + 0 )(%esp),  %esi  ; movl  %esi , SPREG( %ebp ) ; movl  %esi , STREG( %ebp ) ; movl (16 + 0 )(%esp),  %esi  ; movl  %esi , SSREG( %ebp ) ;  ;  ; push %ebp ; call lazy_fpu ; add $4, %esp ;  ; movl $0, %ebp ;  push $2  ; call irq_handle ; add $4, %esp ;  ; movb $ 0x20 , %al ; outb $ 0x20  ; jmp restart ; 0: pusha ;  push $2  ; call irq_handle ; add $4, %esp ;  ; movb $ 0x20 , %al ; outb $ 0x20  ; popa ; iret ;
+
+.balign	16
+hwint03:
+
+	  cmpl $  6  *  8  , 4 (%esp) ; je  0f  ;  ;   push %ebp ; ; movl ( 20  + 4 + 0 )(%esp), %ebp ; ;  mov %ds, %ss:DSREG(%ebp ) ; mov %es, %ss:ESREG(%ebp ) ; mov %fs, %ss:FSREG(%ebp ) ; mov %gs, %ss:GSREG(%ebp ) ;  ;  mov %eax, %ss:AXREG(%ebp ) ; mov %ecx, %ss:CXREG(%ebp ) ; mov %edx, %ss:DXREG(%ebp ) ; mov %ebx, %ss:BXREG(%ebp ) ; mov %esi, %ss:SIREG(%ebp ) ; mov %edi, %ss:DIREG(%ebp ) ;  ; pop %esi ; mov %esi, %ss:BPREG(%ebp) ;  mov %ss, %si ; mov %si, %ds ; mov %si, %es ; movw $0, %si ; mov %si, %gs ; mov %si, %fs ;  ;  movl (0 + 0 )(%esp),  %esi  ; movl  %esi , PCREG( %ebp ) ; movl (4 + 0 )(%esp),  %esi  ; movl  %esi , CSREG( %ebp ) ; movl (8 + 0 )(%esp),  %esi  ; movl  %esi , PSWREG( %ebp ) ; movl (12 + 0 )(%esp),  %esi  ; movl  %esi , SPREG( %ebp ) ; movl  %esi , STREG( %ebp ) ; movl (16 + 0 )(%esp),  %esi  ; movl  %esi , SSREG( %ebp ) ;  ;  ; push %ebp ; call lazy_fpu ; add $4, %esp ;  ; movl $0, %ebp ;  push $3  ; call irq_handle ; add $4, %esp ;  ; movb $ 0x20 , %al ; outb $ 0x20  ; jmp restart ; 0: pusha ;  push $3  ; call irq_handle ; add $4, %esp ;  ; movb $ 0x20 , %al ; outb $ 0x20  ; popa ; iret ;
+
+.balign	16
+hwint04:
+
+	  cmpl $  6  *  8  , 4 (%esp) ; je  0f  ;  ;   push %ebp ; ; movl ( 20  + 4 + 0 )(%esp), %ebp ; ;  mov %ds, %ss:DSREG(%ebp ) ; mov %es, %ss:ESREG(%ebp ) ; mov %fs, %ss:FSREG(%ebp ) ; mov %gs, %ss:GSREG(%ebp ) ;  ;  mov %eax, %ss:AXREG(%ebp ) ; mov %ecx, %ss:CXREG(%ebp ) ; mov %edx, %ss:DXREG(%ebp ) ; mov %ebx, %ss:BXREG(%ebp ) ; mov %esi, %ss:SIREG(%ebp ) ; mov %edi, %ss:DIREG(%ebp ) ;  ; pop %esi ; mov %esi, %ss:BPREG(%ebp) ;  mov %ss, %si ; mov %si, %ds ; mov %si, %es ; movw $0, %si ; mov %si, %gs ; mov %si, %fs ;  ;  movl (0 + 0 )(%esp),  %esi  ; movl  %esi , PCREG( %ebp ) ; movl (4 + 0 )(%esp),  %esi  ; movl  %esi , CSREG( %ebp ) ; movl (8 + 0 )(%esp),  %esi  ; movl  %esi , PSWREG( %ebp ) ; movl (12 + 0 )(%esp),  %esi  ; movl  %esi , SPREG( %ebp ) ; movl  %esi , STREG( %ebp ) ; movl (16 + 0 )(%esp),  %esi  ; movl  %esi , SSREG( %ebp ) ;  ;  ; push %ebp ; call lazy_fpu ; add $4, %esp ;  ; movl $0, %ebp ;  push $4  ; call irq_handle ; add $4, %esp ;  ; movb $ 0x20 , %al ; outb $ 0x20  ; jmp restart ; 0: pusha ;  push $4  ; call irq_handle ; add $4, %esp ;  ; movb $ 0x20 , %al ; outb $ 0x20  ; popa ; iret ;
+
+.balign	16
+hwint05:
+
+	  cmpl $  6  *  8  , 4 (%esp) ; je  0f  ;  ;   push %ebp ; ; movl ( 20  + 4 + 0 )(%esp), %ebp ; ;  mov %ds, %ss:DSREG(%ebp ) ; mov %es, %ss:ESREG(%ebp ) ; mov %fs, %ss:FSREG(%ebp ) ; mov %gs, %ss:GSREG(%ebp ) ;  ;  mov %eax, %ss:AXREG(%ebp ) ; mov %ecx, %ss:CXREG(%ebp ) ; mov %edx, %ss:DXREG(%ebp ) ; mov %ebx, %ss:BXREG(%ebp ) ; mov %esi, %ss:SIREG(%ebp ) ; mov %edi, %ss:DIREG(%ebp ) ;  ; pop %esi ; mov %esi, %ss:BPREG(%ebp) ;  mov %ss, %si ; mov %si, %ds ; mov %si, %es ; movw $0, %si ; mov %si, %gs ; mov %si, %fs ;  ;  movl (0 + 0 )(%esp),  %esi  ; movl  %esi , PCREG( %ebp ) ; movl (4 + 0 )(%esp),  %esi  ; movl  %esi , CSREG( %ebp ) ; movl (8 + 0 )(%esp),  %esi  ; movl  %esi , PSWREG( %ebp ) ; movl (12 + 0 )(%esp),  %esi  ; movl  %esi , SPREG( %ebp ) ; movl  %esi , STREG( %ebp ) ; movl (16 + 0 )(%esp),  %esi  ; movl  %esi , SSREG( %ebp ) ;  ;  ; push %ebp ; call lazy_fpu ; add $4, %esp ;  ; movl $0, %ebp ;  push $5  ; call irq_handle ; add $4, %esp ;  ; movb $ 0x20 , %al ; outb $ 0x20  ; jmp restart ; 0: pusha ;  push $5  ; call irq_handle ; add $4, %esp ;  ; movb $ 0x20 , %al ; outb $ 0x20  ; popa ; iret ;
+
+.balign	16
+hwint06:
+
+	  cmpl $  6  *  8  , 4 (%esp) ; je  0f  ;  ;   push %ebp ; ; movl ( 20  + 4 + 0 )(%esp), %ebp ; ;  mov %ds, %ss:DSREG(%ebp ) ; mov %es, %ss:ESREG(%ebp ) ; mov %fs, %ss:FSREG(%ebp ) ; mov %gs, %ss:GSREG(%ebp ) ;  ;  mov %eax, %ss:AXREG(%ebp ) ; mov %ecx, %ss:CXREG(%ebp ) ; mov %edx, %ss:DXREG(%ebp ) ; mov %ebx, %ss:BXREG(%ebp ) ; mov %esi, %ss:SIREG(%ebp ) ; mov %edi, %ss:DIREG(%ebp ) ;  ; pop %esi ; mov %esi, %ss:BPREG(%ebp) ;  mov %ss, %si ; mov %si, %ds ; mov %si, %es ; movw $0, %si ; mov %si, %gs ; mov %si, %fs ;  ;  movl (0 + 0 )(%esp),  %esi  ; movl  %esi , PCREG( %ebp ) ; movl (4 + 0 )(%esp),  %esi  ; movl  %esi , CSREG( %ebp ) ; movl (8 + 0 )(%esp),  %esi  ; movl  %esi , PSWREG( %ebp ) ; movl (12 + 0 )(%esp),  %esi  ; movl  %esi , SPREG( %ebp ) ; movl  %esi , STREG( %ebp ) ; movl (16 + 0 )(%esp),  %esi  ; movl  %esi , SSREG( %ebp ) ;  ;  ; push %ebp ; call lazy_fpu ; add $4, %esp ;  ; movl $0, %ebp ;  push $6  ; call irq_handle ; add $4, %esp ;  ; movb $ 0x20 , %al ; outb $ 0x20  ; jmp restart ; 0: pusha ;  push $6  ; call irq_handle ; add $4, %esp ;  ; movb $ 0x20 , %al ; outb $ 0x20  ; popa ; iret ;
+
+.balign	16
+hwint07:
+
+	  cmpl $  6  *  8  , 4 (%esp) ; je  0f  ;  ;   push %ebp ; ; movl ( 20  + 4 + 0 )(%esp), %ebp ; ;  mov %ds, %ss:DSREG(%ebp ) ; mov %es, %ss:ESREG(%ebp ) ; mov %fs, %ss:FSREG(%ebp ) ; mov %gs, %ss:GSREG(%ebp ) ;  ;  mov %eax, %ss:AXREG(%ebp ) ; mov %ecx, %ss:CXREG(%ebp ) ; mov %edx, %ss:DXREG(%ebp ) ; mov %ebx, %ss:BXREG(%ebp ) ; mov %esi, %ss:SIREG(%ebp ) ; mov %edi, %ss:DIREG(%ebp ) ;  ; pop %esi ; mov %esi, %ss:BPREG(%ebp) ;  mov %ss, %si ; mov %si, %ds ; mov %si, %es ; movw $0, %si ; mov %si, %gs ; mov %si, %fs ;  ;  movl (0 + 0 )(%esp),  %esi  ; movl  %esi , PCREG( %ebp ) ; movl (4 + 0 )(%esp),  %esi  ; movl  %esi , CSREG( %ebp ) ; movl (8 + 0 )(%esp),  %esi  ; movl  %esi , PSWREG( %ebp ) ; movl (12 + 0 )(%esp),  %esi  ; movl  %esi , SPREG( %ebp ) ; movl  %esi , STREG( %ebp ) ; movl (16 + 0 )(%esp),  %esi  ; movl  %esi , SSREG( %ebp ) ;  ;  ; push %ebp ; call lazy_fpu ; add $4, %esp ;  ; movl $0, %ebp ;  push $7  ; call irq_handle ; add $4, %esp ;  ; movb $ 0x20 , %al ; outb $ 0x20  ; jmp restart ; 0: pusha ;  push $7  ; call irq_handle ; add $4, %esp ;  ; movb $ 0x20 , %al ; outb $ 0x20  ; popa ; iret ;
+# 337 "mpx386.S"
+
+
+.balign	16
+hwint08:
+
+	  cmpl $  6  *  8  , 4 (%esp) ; je  0f  ;  ;   push %ebp ; ; movl ( 20  + 4 + 0 )(%esp), %ebp ; ;  mov %ds, %ss:DSREG(%ebp ) ; mov %es, %ss:ESREG(%ebp ) ; mov %fs, %ss:FSREG(%ebp ) ; mov %gs, %ss:GSREG(%ebp ) ;  ;  mov %eax, %ss:AXREG(%ebp ) ; mov %ecx, %ss:CXREG(%ebp ) ; mov %edx, %ss:DXREG(%ebp ) ; mov %ebx, %ss:BXREG(%ebp ) ; mov %esi, %ss:SIREG(%ebp ) ; mov %edi, %ss:DIREG(%ebp ) ;  ; pop %esi ; mov %esi, %ss:BPREG(%ebp) ;  mov %ss, %si ; mov %si, %ds ; mov %si, %es ; movw $0, %si ; mov %si, %gs ; mov %si, %fs ;  ;  movl (0 + 0 )(%esp),  %esi  ; movl  %esi , PCREG( %ebp ) ; movl (4 + 0 )(%esp),  %esi  ; movl  %esi , CSREG( %ebp ) ; movl (8 + 0 )(%esp),  %esi  ; movl  %esi , PSWREG( %ebp ) ; movl (12 + 0 )(%esp),  %esi  ; movl  %esi , SPREG( %ebp ) ; movl  %esi , STREG( %ebp ) ; movl (16 + 0 )(%esp),  %esi  ; movl  %esi , SSREG( %ebp ) ;  ;  ; push %ebp ; call lazy_fpu ; add $4, %esp ;  ; movl $0, %ebp ;  push $8  ; call irq_handle ; add $4, %esp ;  ; movb $ 0x20 , %al ; outb $ 0x20  ; outb $ 0xA0  ; jmp restart ; 0: pusha ;  push $8  ; call irq_handle ; add $4, %esp ;  ; movb $ 0x20 , %al ; outb $ 0x20  ; outb $ 0xA0  ; popa ; iret ;
+
+.balign	16
+hwint09:
+
+	  cmpl $  6  *  8  , 4 (%esp) ; je  0f  ;  ;   push %ebp ; ; movl ( 20  + 4 + 0 )(%esp), %ebp ; ;  mov %ds, %ss:DSREG(%ebp ) ; mov %es, %ss:ESREG(%ebp ) ; mov %fs, %ss:FSREG(%ebp ) ; mov %gs, %ss:GSREG(%ebp ) ;  ;  mov %eax, %ss:AXREG(%ebp ) ; mov %ecx, %ss:CXREG(%ebp ) ; mov %edx, %ss:DXREG(%ebp ) ; mov %ebx, %ss:BXREG(%ebp ) ; mov %esi, %ss:SIREG(%ebp ) ; mov %edi, %ss:DIREG(%ebp ) ;  ; pop %esi ; mov %esi, %ss:BPREG(%ebp) ;  mov %ss, %si ; mov %si, %ds ; mov %si, %es ; movw $0, %si ; mov %si, %gs ; mov %si, %fs ;  ;  movl (0 + 0 )(%esp),  %esi  ; movl  %esi , PCREG( %ebp ) ; movl (4 + 0 )(%esp),  %esi  ; movl  %esi , CSREG( %ebp ) ; movl (8 + 0 )(%esp),  %esi  ; movl  %esi , PSWREG( %ebp ) ; movl (12 + 0 )(%esp),  %esi  ; movl  %esi , SPREG( %ebp ) ; movl  %esi , STREG( %ebp ) ; movl (16 + 0 )(%esp),  %esi  ; movl  %esi , SSREG( %ebp ) ;  ;  ; push %ebp ; call lazy_fpu ; add $4, %esp ;  ; movl $0, %ebp ;  push $9  ; call irq_handle ; add $4, %esp ;  ; movb $ 0x20 , %al ; outb $ 0x20  ; outb $ 0xA0  ; jmp restart ; 0: pusha ;  push $9  ; call irq_handle ; add $4, %esp ;  ; movb $ 0x20 , %al ; outb $ 0x20  ; outb $ 0xA0  ; popa ; iret ;
+
+.balign	16
+hwint10:
+
+	  cmpl $  6  *  8  , 4 (%esp) ; je  0f  ;  ;   push %ebp ; ; movl ( 20  + 4 + 0 )(%esp), %ebp ; ;  mov %ds, %ss:DSREG(%ebp ) ; mov %es, %ss:ESREG(%ebp ) ; mov %fs, %ss:FSREG(%ebp ) ; mov %gs, %ss:GSREG(%ebp ) ;  ;  mov %eax, %ss:AXREG(%ebp ) ; mov %ecx, %ss:CXREG(%ebp ) ; mov %edx, %ss:DXREG(%ebp ) ; mov %ebx, %ss:BXREG(%ebp ) ; mov %esi, %ss:SIREG(%ebp ) ; mov %edi, %ss:DIREG(%ebp ) ;  ; pop %esi ; mov %esi, %ss:BPREG(%ebp) ;  mov %ss, %si ; mov %si, %ds ; mov %si, %es ; movw $0, %si ; mov %si, %gs ; mov %si, %fs ;  ;  movl (0 + 0 )(%esp),  %esi  ; movl  %esi , PCREG( %ebp ) ; movl (4 + 0 )(%esp),  %esi  ; movl  %esi , CSREG( %ebp ) ; movl (8 + 0 )(%esp),  %esi  ; movl  %esi , PSWREG( %ebp ) ; movl (12 + 0 )(%esp),  %esi  ; movl  %esi , SPREG( %ebp ) ; movl  %esi , STREG( %ebp ) ; movl (16 + 0 )(%esp),  %esi  ; movl  %esi , SSREG( %ebp ) ;  ;  ; push %ebp ; call lazy_fpu ; add $4, %esp ;  ; movl $0, %ebp ;  push $10  ; call irq_handle ; add $4, %esp ;  ; movb $ 0x20 , %al ; outb $ 0x20  ; outb $ 0xA0  ; jmp restart ; 0: pusha ;  push $10  ; call irq_handle ; add $4, %esp ;  ; movb $ 0x20 , %al ; outb $ 0x20  ; outb $ 0xA0  ; popa ; iret ;
+
+.balign	16
+hwint11:
+
+	  cmpl $  6  *  8  , 4 (%esp) ; je  0f  ;  ;   push %ebp ; ; movl ( 20  + 4 + 0 )(%esp), %ebp ; ;  mov %ds, %ss:DSREG(%ebp ) ; mov %es, %ss:ESREG(%ebp ) ; mov %fs, %ss:FSREG(%ebp ) ; mov %gs, %ss:GSREG(%ebp ) ;  ;  mov %eax, %ss:AXREG(%ebp ) ; mov %ecx, %ss:CXREG(%ebp ) ; mov %edx, %ss:DXREG(%ebp ) ; mov %ebx, %ss:BXREG(%ebp ) ; mov %esi, %ss:SIREG(%ebp ) ; mov %edi, %ss:DIREG(%ebp ) ;  ; pop %esi ; mov %esi, %ss:BPREG(%ebp) ;  mov %ss, %si ; mov %si, %ds ; mov %si, %es ; movw $0, %si ; mov %si, %gs ; mov %si, %fs ;  ;  movl (0 + 0 )(%esp),  %esi  ; movl  %esi , PCREG( %ebp ) ; movl (4 + 0 )(%esp),  %esi  ; movl  %esi , CSREG( %ebp ) ; movl (8 + 0 )(%esp),  %esi  ; movl  %esi , PSWREG( %ebp ) ; movl (12 + 0 )(%esp),  %esi  ; movl  %esi , SPREG( %ebp ) ; movl  %esi , STREG( %ebp ) ; movl (16 + 0 )(%esp),  %esi  ; movl  %esi , SSREG( %ebp ) ;  ;  ; push %ebp ; call lazy_fpu ; add $4, %esp ;  ; movl $0, %ebp ;  push $11  ; call irq_handle ; add $4, %esp ;  ; movb $ 0x20 , %al ; outb $ 0x20  ; outb $ 0xA0  ; jmp restart ; 0: pusha ;  push $11  ; call irq_handle ; add $4, %esp ;  ; movb $ 0x20 , %al ; outb $ 0x20  ; outb $ 0xA0  ; popa ; iret ;
+
+.balign	16
+hwint12:
+
+	  cmpl $  6  *  8  , 4 (%esp) ; je  0f  ;  ;   push %ebp ; ; movl ( 20  + 4 + 0 )(%esp), %ebp ; ;  mov %ds, %ss:DSREG(%ebp ) ; mov %es, %ss:ESREG(%ebp ) ; mov %fs, %ss:FSREG(%ebp ) ; mov %gs, %ss:GSREG(%ebp ) ;  ;  mov %eax, %ss:AXREG(%ebp ) ; mov %ecx, %ss:CXREG(%ebp ) ; mov %edx, %ss:DXREG(%ebp ) ; mov %ebx, %ss:BXREG(%ebp ) ; mov %esi, %ss:SIREG(%ebp ) ; mov %edi, %ss:DIREG(%ebp ) ;  ; pop %esi ; mov %esi, %ss:BPREG(%ebp) ;  mov %ss, %si ; mov %si, %ds ; mov %si, %es ; movw $0, %si ; mov %si, %gs ; mov %si, %fs ;  ;  movl (0 + 0 )(%esp),  %esi  ; movl  %esi , PCREG( %ebp ) ; movl (4 + 0 )(%esp),  %esi  ; movl  %esi , CSREG( %ebp ) ; movl (8 + 0 )(%esp),  %esi  ; movl  %esi , PSWREG( %ebp ) ; movl (12 + 0 )(%esp),  %esi  ; movl  %esi , SPREG( %ebp ) ; movl  %esi , STREG( %ebp ) ; movl (16 + 0 )(%esp),  %esi  ; movl  %esi , SSREG( %ebp ) ;  ;  ; push %ebp ; call lazy_fpu ; add $4, %esp ;  ; movl $0, %ebp ;  push $12  ; call irq_handle ; add $4, %esp ;  ; movb $ 0x20 , %al ; outb $ 0x20  ; outb $ 0xA0  ; jmp restart ; 0: pusha ;  push $12  ; call irq_handle ; add $4, %esp ;  ; movb $ 0x20 , %al ; outb $ 0x20  ; outb $ 0xA0  ; popa ; iret ;
+
+.balign	16
+hwint13:
+
+	  cmpl $  6  *  8  , 4 (%esp) ; je  0f  ;  ;   push %ebp ; ; movl ( 20  + 4 + 0 )(%esp), %ebp ; ;  mov %ds, %ss:DSREG(%ebp ) ; mov %es, %ss:ESREG(%ebp ) ; mov %fs, %ss:FSREG(%ebp ) ; mov %gs, %ss:GSREG(%ebp ) ;  ;  mov %eax, %ss:AXREG(%ebp ) ; mov %ecx, %ss:CXREG(%ebp ) ; mov %edx, %ss:DXREG(%ebp ) ; mov %ebx, %ss:BXREG(%ebp ) ; mov %esi, %ss:SIREG(%ebp ) ; mov %edi, %ss:DIREG(%ebp ) ;  ; pop %esi ; mov %esi, %ss:BPREG(%ebp) ;  mov %ss, %si ; mov %si, %ds ; mov %si, %es ; movw $0, %si ; mov %si, %gs ; mov %si, %fs ;  ;  movl (0 + 0 )(%esp),  %esi  ; movl  %esi , PCREG( %ebp ) ; movl (4 + 0 )(%esp),  %esi  ; movl  %esi , CSREG( %ebp ) ; movl (8 + 0 )(%esp),  %esi  ; movl  %esi , PSWREG( %ebp ) ; movl (12 + 0 )(%esp),  %esi  ; movl  %esi , SPREG( %ebp ) ; movl  %esi , STREG( %ebp ) ; movl (16 + 0 )(%esp),  %esi  ; movl  %esi , SSREG( %ebp ) ;  ;  ; push %ebp ; call lazy_fpu ; add $4, %esp ;  ; movl $0, %ebp ;  push $13  ; call irq_handle ; add $4, %esp ;  ; movb $ 0x20 , %al ; outb $ 0x20  ; outb $ 0xA0  ; jmp restart ; 0: pusha ;  push $13  ; call irq_handle ; add $4, %esp ;  ; movb $ 0x20 , %al ; outb $ 0x20  ; outb $ 0xA0  ; popa ; iret ;
+
+.balign	16
+hwint14:
+
+	  cmpl $  6  *  8  , 4 (%esp) ; je  0f  ;  ;   push %ebp ; ; movl ( 20  + 4 + 0 )(%esp), %ebp ; ;  mov %ds, %ss:DSREG(%ebp ) ; mov %es, %ss:ESREG(%ebp ) ; mov %fs, %ss:FSREG(%ebp ) ; mov %gs, %ss:GSREG(%ebp ) ;  ;  mov %eax, %ss:AXREG(%ebp ) ; mov %ecx, %ss:CXREG(%ebp ) ; mov %edx, %ss:DXREG(%ebp ) ; mov %ebx, %ss:BXREG(%ebp ) ; mov %esi, %ss:SIREG(%ebp ) ; mov %edi, %ss:DIREG(%ebp ) ;  ; pop %esi ; mov %esi, %ss:BPREG(%ebp) ;  mov %ss, %si ; mov %si, %ds ; mov %si, %es ; movw $0, %si ; mov %si, %gs ; mov %si, %fs ;  ;  movl (0 + 0 )(%esp),  %esi  ; movl  %esi , PCREG( %ebp ) ; movl (4 + 0 )(%esp),  %esi  ; movl  %esi , CSREG( %ebp ) ; movl (8 + 0 )(%esp),  %esi  ; movl  %esi , PSWREG( %ebp ) ; movl (12 + 0 )(%esp),  %esi  ; movl  %esi , SPREG( %ebp ) ; movl  %esi , STREG( %ebp ) ; movl (16 + 0 )(%esp),  %esi  ; movl  %esi , SSREG( %ebp ) ;  ;  ; push %ebp ; call lazy_fpu ; add $4, %esp ;  ; movl $0, %ebp ;  push $14  ; call irq_handle ; add $4, %esp ;  ; movb $ 0x20 , %al ; outb $ 0x20  ; outb $ 0xA0  ; jmp restart ; 0: pusha ;  push $14  ; call irq_handle ; add $4, %esp ;  ; movb $ 0x20 , %al ; outb $ 0x20  ; outb $ 0xA0  ; popa ; iret ;
+
+.balign	16
+hwint15:
+
+	  cmpl $  6  *  8  , 4 (%esp) ; je  0f  ;  ;   push %ebp ; ; movl ( 20  + 4 + 0 )(%esp), %ebp ; ;  mov %ds, %ss:DSREG(%ebp ) ; mov %es, %ss:ESREG(%ebp ) ; mov %fs, %ss:FSREG(%ebp ) ; mov %gs, %ss:GSREG(%ebp ) ;  ;  mov %eax, %ss:AXREG(%ebp ) ; mov %ecx, %ss:CXREG(%ebp ) ; mov %edx, %ss:DXREG(%ebp ) ; mov %ebx, %ss:BXREG(%ebp ) ; mov %esi, %ss:SIREG(%ebp ) ; mov %edi, %ss:DIREG(%ebp ) ;  ; pop %esi ; mov %esi, %ss:BPREG(%ebp) ;  mov %ss, %si ; mov %si, %ds ; mov %si, %es ; movw $0, %si ; mov %si, %gs ; mov %si, %fs ;  ;  movl (0 + 0 )(%esp),  %esi  ; movl  %esi , PCREG( %ebp ) ; movl (4 + 0 )(%esp),  %esi  ; movl  %esi , CSREG( %ebp ) ; movl (8 + 0 )(%esp),  %esi  ; movl  %esi , PSWREG( %ebp ) ; movl (12 + 0 )(%esp),  %esi  ; movl  %esi , SPREG( %ebp ) ; movl  %esi , STREG( %ebp ) ; movl (16 + 0 )(%esp),  %esi  ; movl  %esi , SSREG( %ebp ) ;  ;  ; push %ebp ; call lazy_fpu ; add $4, %esp ;  ; movl $0, %ebp ;  push $15  ; call irq_handle ; add $4, %esp ;  ; movb $ 0x20 , %al ; outb $ 0x20  ; outb $ 0xA0  ; jmp restart ; 0: pusha ;  push $15  ; call irq_handle ; add $4, %esp ;  ; movb $ 0x20 , %al ; outb $ 0x20  ; outb $ 0xA0  ; popa ; iret ;
+
+
+
+
+.balign 16
+.globl syscall_entry
+syscall_entry:
+
+	  push %ebp ; ; movl ( 20  + 4 + 0 )(%esp), %ebp ; ;  mov %ds, %ss:DSREG(%ebp ) ; mov %es, %ss:ESREG(%ebp ) ; mov %fs, %ss:FSREG(%ebp ) ; mov %gs, %ss:GSREG(%ebp ) ;  ;  mov %eax, %ss:AXREG(%ebp ) ; mov %ecx, %ss:CXREG(%ebp ) ; mov %edx, %ss:DXREG(%ebp ) ; mov %ebx, %ss:BXREG(%ebp ) ; mov %esi, %ss:SIREG(%ebp ) ; mov %edi, %ss:DIREG(%ebp ) ;  ; pop %esi ; mov %esi, %ss:BPREG(%ebp) ;  mov %ss, %si ; mov %si, %ds ; mov %si, %es ; movw $0, %si ; mov %si, %gs ; mov %si, %fs ;  ;  movl (0 + 0 )(%esp),  %esi  ; movl  %esi , PCREG( %ebp ) ; movl (4 + 0 )(%esp),  %esi  ; movl  %esi , CSREG( %ebp ) ; movl (8 + 0 )(%esp),  %esi  ; movl  %esi , PSWREG( %ebp ) ; movl (12 + 0 )(%esp),  %esi  ; movl  %esi , SPREG( %ebp ) ; movl  %esi , STREG( %ebp ) ; movl (16 + 0 )(%esp),  %esi  ; movl  %esi , SSREG( %ebp ) ;  ;  ; push %ebp ; call lazy_fpu ; add $4, %esp ;
+
+
+	push	%ebp
+
+	
+
+
+
+
+	push	%edx
+	push	%ebx
+	push	%eax
+	push	%ecx
+
+
+	movl	$0, %ebp
+
+	call	sys_call
+
+
+	add	$4 * 4, %esp
+	pop	%esi
+	mov     %eax, AXREG(%esi)
+
+	jmp	restart
+
+
+.balign 16
+
+
+
+
+
+
+exception_entry:
+	
+
+
+
+	 cmpl $  6  *  8  , 12 (%esp) ; je  exception_entry_nested  ;
+
+exception_entry_from_user:
+
+	cld
+
+	  push %ebp ; ; movl ( 20  + 4 + 8 )(%esp), %ebp ; ;  mov %ds, %ss:DSREG(%ebp ) ; mov %es, %ss:ESREG(%ebp ) ; mov %fs, %ss:FSREG(%ebp ) ; mov %gs, %ss:GSREG(%ebp ) ;  ;  mov %eax, %ss:AXREG(%ebp ) ; mov %ecx, %ss:CXREG(%ebp ) ; mov %edx, %ss:DXREG(%ebp ) ; mov %ebx, %ss:BXREG(%ebp ) ; mov %esi, %ss:SIREG(%ebp ) ; mov %edi, %ss:DIREG(%ebp ) ;  ; pop %esi ; mov %esi, %ss:BPREG(%ebp) ;  mov %ss, %si ; mov %si, %ds ; mov %si, %es ; movw $0, %si ; mov %si, %gs ; mov %si, %fs ;  ;  movl (0 + 8 )(%esp),  %esi  ; movl  %esi , PCREG( %ebp ) ; movl (4 + 8 )(%esp),  %esi  ; movl  %esi , CSREG( %ebp ) ; movl (8 + 8 )(%esp),  %esi  ; movl  %esi , PSWREG( %ebp ) ; movl (12 + 8 )(%esp),  %esi  ; movl  %esi , SPREG( %ebp ) ; movl  %esi , STREG( %ebp ) ; movl (16 + 8 )(%esp),  %esi  ; movl  %esi , SSREG( %ebp ) ;  ;  ; push %ebp ; call lazy_fpu ; add $4, %esp ;
+
+
+	movl	$0, %ebp
+
+	
+
+
+
+
+	push	%esp
+	push	$0
+	call 	exception_handler
+
+	jmp	restart
+
+exception_entry_nested:
+
+	pusha
+	mov	%esp, %eax
+	add	$(8 * 4), %eax
+	push	%eax
+	pushl	$1
+	call	exception_handler
+	add	$8, %esp
+	popa
+
+
+	add	$8, %esp
+
+	iret
+
+
+
+
+restart:
+	call	schedcheck
+
+
+	mov	%eax, %ebp
+
+	cmpl	$0, P_CR3(%ebp)
+	jz	0f
+
+	
+
+
+
+	mov	P_CR3(%ebp), %eax
+	mov	%cr3, %ecx
+	cmp	%ecx, %eax
+	jz	0f
+	mov	%eax, %cr3
+	mov	%ebp, ptproc
+	movl	$0, dirtypde
+0:
+
+
+	movl	SSREG(%ebp), %eax
+	push	%eax
+	movl	SPREG(%ebp), %eax
+	push	%eax
+	movl	PSWREG(%ebp), %eax
+	push	%eax
+	movl	CSREG(%ebp), %eax
+	push	%eax
+	movl	PCREG(%ebp), %eax
+	push	%eax
+
+	 movl %ss:AXREG(%ebp ), %eax ; movl %ss:CXREG(%ebp ), %ecx ; movl %ss:DXREG(%ebp ), %edx ; movl %ss:BXREG(%ebp ), %ebx ; movl %ss:SIREG(%ebp ), %esi ; movl %ss:DIREG(%ebp ), %edi ;
+
+	lldt	P_LDT_SEL(%ebp)
+	 movw %ss:DSREG(%ebp ), %ds ; movw %ss:ESREG(%ebp ), %es ; movw %ss:FSREG(%ebp ), %fs ; movw %ss:GSREG(%ebp ), %gs ;
+
+	movl	%ss:BPREG(%ebp), %ebp
+
+	iret
+# 517 "mpx386.S"
+# 521 "mpx386.S"
+
+divide_error:
+	 pushl $0 ;  push $0  ; jmp exception_entry
+
+single_step_exception:
+	 pushl $0 ;  push $1  ; jmp exception_entry
+
+nmi:
+# 540 "mpx386.S"
+
+
+	
+
+
+
+	pushw	%ds
+	pushw	%es
+	pushw	%fs
+	pushw	%gs
+	pusha
+
+	
+
+
+
+	mov	%ss, %si
+	mov	%si, %ds
+	mov	%si, %es
+
+	push	%esp
+	call	nmi_watchdog_handler
+	add	$4, %esp
+
+
+	popa
+	popw	%gs
+	popw	%fs
+	popw	%es
+	popw	%ds
+
+	iret
+
+
+breakpoint_exception:
+	 pushl $0 ;  push $3  ; jmp exception_entry
+
+overflow:
+	 pushl $0 ;  push $4  ; jmp exception_entry
+
+bounds_check:
+	 pushl $0 ;  push $5  ; jmp exception_entry
+
+inval_opcode:
+	 pushl $0 ;  push $6  ; jmp exception_entry
+
+copr_not_available:
+	 cmpl $  6  *  8  , 4 (%esp) ; je  copr_not_available_in_kernel  ;
+	clts
+	cld
+	 push %ebp ; ; movl ( 20  + 4 + 0 )(%esp), %ebp ; ;  mov %ds, %ss:DSREG(%ebp ) ; mov %es, %ss:ESREG(%ebp ) ; mov %fs, %ss:FSREG(%ebp ) ; mov %gs, %ss:GSREG(%ebp ) ;  ;  mov %eax, %ss:AXREG(%ebp ) ; mov %ecx, %ss:CXREG(%ebp ) ; mov %edx, %ss:DXREG(%ebp ) ; mov %ebx, %ss:BXREG(%ebp ) ; mov %esi, %ss:SIREG(%ebp ) ; mov %edi, %ss:DIREG(%ebp ) ;  ; pop %esi ; mov %esi, %ss:BPREG(%ebp) ;  mov %ss, %si ; mov %si, %ds ; mov %si, %es ; movw $0, %si ; mov %si, %gs ; mov %si, %fs ;  ;  movl (0 + 0 )(%esp),  %esi  ; movl  %esi , PCREG( %ebp ) ; movl (4 + 0 )(%esp),  %esi  ; movl  %esi , CSREG( %ebp ) ; movl (8 + 0 )(%esp),  %esi  ; movl  %esi , PSWREG( %ebp ) ; movl (12 + 0 )(%esp),  %esi  ; movl  %esi , SPREG( %ebp ) ; movl  %esi , STREG( %ebp ) ; movl (16 + 0 )(%esp),  %esi  ; movl  %esi , SSREG( %ebp ) ;  ;
+	lea	P_MISC_FLAGS(%ebp), %ebx
+	movw	(%ebx), %cx
+	and	$ 0x1000 , %cx
+	jnz	0f
+	orw	$ 0x1000 , (%ebx)
+	fninit
+	jmp	copr_return
+0:
+	mov	%ss:FP_SAVE_AREA_P(%ebp), %eax
+	cmp	$0, osfxsr_feature
+	jz	fp_l_no_fxsr
+
+
+	fxrstor	(%eax)
+	jmp	copr_return
+fp_l_no_fxsr:
+
+	frstor	(%eax)
+copr_return:
+	orw	$ 0x800 , (%ebx)
+	jmp	restart
+
+copr_not_available_in_kernel:
+	movl	$ 0x8000 , 4(%esp)
+	movl	$0, (%esp)
+	call	minix_panic
+
+double_fault:
+	 push $8  ; jmp exception_entry
+
+copr_seg_overrun:
+	 pushl $0 ;  push $9  ; jmp exception_entry
+
+inval_tss:
+	 push $10  ; jmp exception_entry
+
+segment_not_present:
+	 push $11  ; jmp exception_entry
+
+stack_exception:
+	 push $12  ; jmp exception_entry
+
+general_protection:
+	 push $13  ; jmp exception_entry
+
+page_fault:
+	 push $14  ; jmp exception_entry
+
+copr_error:
+	 pushl $0 ;  push $16  ; jmp exception_entry
+
+alignment_check:
+	 pushl $0 ;  push $17  ; jmp exception_entry
+
+machine_check:
+	 pushl $0 ;  push $18  ; jmp exception_entry
+
+simd_exception:
+	 pushl $0 ;  push $19  ; jmp exception_entry
+
+
+
+
+
+
+
+
+
+lazy_fpu:
+	push	%ebp
+	mov	%esp, %ebp
+	push	%eax
+	push	%ebx
+	push	%ecx
+	cmp	$0, fpu_presence
+	jz	no_fpu_available
+	mov	8(%ebp), %eax
+	lea	P_MISC_FLAGS(%eax), %ebx
+	movw	(%ebx), %cx
+	and	$ 0x800 , %cx
+	jz	0f
+	mov	%ss:FP_SAVE_AREA_P(%eax), %eax
+	cmp	$0, osfxsr_feature
+	jz	fp_s_no_fxsr
+
+
+	fxsave	(%eax)
+	fninit
+	jmp	fp_saved
+fp_s_no_fxsr:
+
+	fnsave	(%eax)
+	fwait
+fp_saved:
+	andw	$~ 0x800 , (%ebx)
+0:	mov	%cr0, %eax
+	or	$0x00000008, %eax
+	mov	%eax, %cr0
+no_fpu_available:
+	pop	%ecx
+	pop	%ebx
+	pop	%eax
+	pop	%ebp
+	ret
+
+
+
+
+
+write_cr3:
+	push    %ebp
+	mov     %esp, %ebp
+	mov	8(%ebp), %eax
+	mov	%cr3, %ecx
+	cmp	%ecx, %eax
+	jz	0f
+	mov	%eax, %cr3
+	movl	$0, dirtypde
+0:
+	pop     %ebp
+	ret
+
+
+
+
+level0_call:
+
+
+
+	  push %ebp ; ; movl ( 20  + 4 + 0 )(%esp), %ebp ; ;  mov %ds, %ss:DSREG(%ebp ) ; mov %es, %ss:ESREG(%ebp ) ; mov %fs, %ss:FSREG(%ebp ) ; mov %gs, %ss:GSREG(%ebp ) ;  ;  mov %eax, %ss:AXREG(%ebp ) ; mov %ecx, %ss:CXREG(%ebp ) ; mov %edx, %ss:DXREG(%ebp ) ; mov %ebx, %ss:BXREG(%ebp ) ; mov %esi, %ss:SIREG(%ebp ) ; mov %edi, %ss:DIREG(%ebp ) ;  ; pop %esi ; mov %esi, %ss:BPREG(%ebp) ;  mov %ss, %si ; mov %si, %ds ; mov %si, %es ; movw $0, %si ; mov %si, %gs ; mov %si, %fs ;  ;  movl (0 + 0 )(%esp),  %esi  ; movl  %esi , PCREG( %ebp ) ; movl (4 + 0 )(%esp),  %esi  ; movl  %esi , CSREG( %ebp ) ; movl (8 + 0 )(%esp),  %esi  ; movl  %esi , PSWREG( %ebp ) ; movl (12 + 0 )(%esp),  %esi  ; movl  %esi , SPREG( %ebp ) ; movl  %esi , STREG( %ebp ) ; movl (16 + 0 )(%esp),  %esi  ; movl  %esi , SSREG( %ebp ) ;  ;  ; push %ebp ; call lazy_fpu ; add $4, %esp ;
+
+	movl	$0, %ebp
+	
+
+
+
+	call	*%eax
+	jmp	restart
+
+
+
+
+
+
+reload_cr3:
+	push    %ebp
+	mov     %esp, %ebp
+	movl	$0, dirtypde
+	mov	%cr3, %eax
+	mov	%eax, %cr3
+	pop     %ebp
+	ret
+
+
+
+
+
+
+.rom
+# 753 "mpx386.S"
+.short	0x526F
+
+.bss
+
+
+
+
+.globl k_boot_stktop
+k_boot_stack:
+.space	4096
+k_boot_stktop:
+

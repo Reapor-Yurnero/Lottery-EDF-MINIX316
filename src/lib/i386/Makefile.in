@@ -1,0 +1,10 @@
+# Makefile for lib/i386.
+
+SUBDIRS="\
+	int64 \
+	math \
+	misc \
+	rts \
+	string"
+
+TYPE=both

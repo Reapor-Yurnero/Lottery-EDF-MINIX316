@@ -1,0 +1,1761 @@
+diff -ruB src/include/minix/callnr.h orig_src/include/minix/callnr.h
+--- src/include/minix/callnr.h	2018-12-14 04:29:11.000000000 +0800
++++ orig_src/include/minix/callnr.h	2018-12-31 14:24:08.000000000 +0800
+@@ -56,7 +56,6 @@
+ #define ITIMER		  64
+ #define GETGROUPS	  65
+ #define SETGROUPS	  66
+-#define CHDEADLINE    70   /* signal to PM */
+ 
+ /* Posix signal handling. */
+ #define SIGACTION	  71
+diff -ruB src/include/minix/com.h orig_src/include/minix/com.h
+--- src/include/minix/com.h	2018-12-14 04:29:11.000000000 +0800
++++ orig_src/include/minix/com.h	2018-12-31 14:24:08.000000000 +0800
+@@ -27,9 +27,6 @@
+ #ifndef _MINIX_COM_H
+ #define _MINIX_COM_H 
+ 
+-/* EDF syscall */
+-#define SYS_CHDEADLINE ( KERNEL_CALL + 50)
+-
+ /*===========================================================================*
+  *          	    		Magic process numbers			     *
+  *===========================================================================*/
+@@ -356,7 +353,7 @@
+ #  define SYS_SAFEREVMAP (KERNEL_CALL + 48)	/* sys_saferevmap() sys_saferevmap2() */
+ #  define SYS_SAFEUNMAP	 (KERNEL_CALL + 49)	/* sys_safeunmap() */
+ 
+-#define NR_SYS_CALLS	51	/* number of system calls  + 1 edf*/ 
++#define NR_SYS_CALLS	50	/* number of system calls */ 
+ #define SYS_CALL_MASK_SIZE BITMAP_CHUNKS(NR_SYS_CALLS)
+ 
+ /* Field names for SYS_MEMSET. */
+diff -ruB src/include/minix/sys_config.h orig_src/include/minix/sys_config.h
+--- src/include/minix/sys_config.h	2018-12-14 04:29:11.000000000 +0800
++++ orig_src/include/minix/sys_config.h	2018-12-31 14:24:08.000000000 +0800
+@@ -73,3 +73,9 @@
+ #define _KMESS_BUF_SIZE  10000
+ 
+ #endif /* _MINIX_SYS_CONFIG_H */
++
++
++/* Added by release script  */
++#ifndef _SVN_REVISION
++#define _SVN_REVISION "branch-R3.1.6-r6084"
++#endif
+diff -ruB src/include/minix/syslib.h orig_src/include/minix/syslib.h
+--- src/include/minix/syslib.h	2018-12-14 04:29:11.000000000 +0800
++++ orig_src/include/minix/syslib.h	2018-12-31 14:24:08.000000000 +0800
+@@ -29,8 +29,6 @@
+ /*==========================================================================* 
+  * Minix system library. 						    *
+  *==========================================================================*/ 
+-_PROTOTYPE( int sys_chdeadline, ( endpoint_t proc_ep, long deadline));
+-
+ _PROTOTYPE( int _taskcall, (endpoint_t who, int syscallnr, message *msgptr));
+ 
+ _PROTOTYPE( int sys_abort, (int how, ...));
+diff -ruB src/include/syslog.h orig_src/include/syslog.h
+--- src/include/syslog.h	2018-12-14 04:29:11.000000000 +0800
++++ orig_src/include/syslog.h	2018-12-31 14:24:08.000000000 +0800
+@@ -31,7 +31,7 @@
+  *
+  * from  @(#)syslog.h	7.20 (Berkeley) 2/23/91
+  * Porting to Minix by G. Falzoni <gfalzoni@inwind.it>
+- * $Id$
++ * $Id: syslog.h 5259 2009-09-21 14:23:10Z beng $
+  */
+ 
+ /*
+diff -ruB src/include/unistd.h orig_src/include/unistd.h
+--- src/include/unistd.h	2018-12-14 04:29:11.000000000 +0800
++++ orig_src/include/unistd.h	2018-12-31 14:24:09.000000000 +0800
+@@ -94,8 +94,6 @@
+ #define _POSIX_CHOWN_RESTRICTED  1
+ 
+ /* Function Prototypes. */
+-/* new function */
+-_PROTOTYPE( int chdeadline, (long deadline));
+ _PROTOTYPE( void _exit, (int _status)					);
+ _PROTOTYPE( int access, (const char *_path, int _amode)			);
+ _PROTOTYPE( unsigned int alarm, (unsigned int _seconds)			);
+Only in src/kernel: .DS_Store
+diff -ruB src/kernel/arch/i386/apic_asm.o.s orig_src/kernel/arch/i386/apic_asm.o.s
+--- src/kernel/arch/i386/apic_asm.o.s	2018-12-14 04:29:11.000000000 +0800
++++ orig_src/kernel/arch/i386/apic_asm.o.s	2018-12-31 14:24:05.000000000 +0800
+@@ -33,7 +33,7 @@
+ ! 71 "/usr/include/ansi.h"
+ ! 3 "/usr/include/minix/debug.h"
+ ! 11 "/usr/include/minix/debug.h"
+-! 65 "./../../config.h"
++! 64 "./../../config.h"
+ ! 13 "./../../debug.h"
+ ! 43 "./../../debug.h"
+ ! 55 "./../../debug.h"
+diff -ruB src/kernel/arch/i386/apic_asm.o.tmp orig_src/kernel/arch/i386/apic_asm.o.tmp
+--- src/kernel/arch/i386/apic_asm.o.tmp	2018-12-14 04:29:11.000000000 +0800
++++ orig_src/kernel/arch/i386/apic_asm.o.tmp	2018-12-31 14:24:05.000000000 +0800
+@@ -29,7 +29,7 @@
+ # 71 "/usr/include/ansi.h"
+ # 3 "/usr/include/minix/debug.h"
+ # 11 "/usr/include/minix/debug.h"
+-# 65 "./../../config.h"
++# 64 "./../../config.h"
+ # 13 "./../../debug.h"
+ # 43 "./../../debug.h"
+ # 55 "./../../debug.h"
+Binary files src/kernel/arch/i386/arch_do_vmctl.o and orig_src/kernel/arch/i386/arch_do_vmctl.o differ
+Binary files src/kernel/arch/i386/do_iopenable.o and orig_src/kernel/arch/i386/do_iopenable.o differ
+Binary files src/kernel/arch/i386/do_sdevio.o and orig_src/kernel/arch/i386/do_sdevio.o differ
+Binary files src/kernel/arch/i386/exception.o and orig_src/kernel/arch/i386/exception.o differ
+Binary files src/kernel/arch/i386/i386.a and orig_src/kernel/arch/i386/i386.a differ
+diff -ruB src/kernel/arch/i386/klib386.o.s orig_src/kernel/arch/i386/klib386.o.s
+--- src/kernel/arch/i386/klib386.o.s	2018-12-14 04:29:11.000000000 +0800
++++ orig_src/kernel/arch/i386/klib386.o.s	2018-12-31 14:24:05.000000000 +0800
+@@ -38,7 +38,7 @@
+ ! 71 "/usr/include/ansi.h"
+ ! 3 "/usr/include/minix/debug.h"
+ ! 11 "/usr/include/minix/debug.h"
+-! 65 "./../../config.h"
++! 64 "./../../config.h"
+ ! 13 "./../../debug.h"
+ ! 43 "./../../debug.h"
+ ! 55 "./../../debug.h"
+diff -ruB src/kernel/arch/i386/klib386.o.tmp orig_src/kernel/arch/i386/klib386.o.tmp
+--- src/kernel/arch/i386/klib386.o.tmp	2018-12-14 04:29:11.000000000 +0800
++++ orig_src/kernel/arch/i386/klib386.o.tmp	2018-12-31 14:24:05.000000000 +0800
+@@ -34,7 +34,7 @@
+ # 71 "/usr/include/ansi.h"
+ # 3 "/usr/include/minix/debug.h"
+ # 11 "/usr/include/minix/debug.h"
+-# 65 "./../../config.h"
++# 64 "./../../config.h"
+ # 13 "./../../debug.h"
+ # 43 "./../../debug.h"
+ # 55 "./../../debug.h"
+Binary files src/kernel/arch/i386/memory.o and orig_src/kernel/arch/i386/memory.o differ
+diff -ruB src/kernel/arch/i386/mpx386.o.s orig_src/kernel/arch/i386/mpx386.o.s
+--- src/kernel/arch/i386/mpx386.o.s	2018-12-14 04:29:11.000000000 +0800
++++ orig_src/kernel/arch/i386/mpx386.o.s	2018-12-31 14:24:05.000000000 +0800
+@@ -35,14 +35,14 @@
+ ! 81 "/usr/include/minix/const.h"
+ ! 103 "/usr/include/minix/const.h"
+ ! 25 "/usr/include/minix/com.h"
+-! 43 "/usr/include/minix/com.h"
+-! 172 "/usr/include/minix/com.h"
+-! 501 "/usr/include/minix/com.h"
+-! 525 "/usr/include/minix/com.h"
+-! 772 "/usr/include/minix/com.h"
+-! 796 "/usr/include/minix/com.h"
+-! 808 "/usr/include/minix/com.h"
+-! 998 "/usr/include/minix/com.h"
++! 40 "/usr/include/minix/com.h"
++! 169 "/usr/include/minix/com.h"
++! 498 "/usr/include/minix/com.h"
++! 522 "/usr/include/minix/com.h"
++! 769 "/usr/include/minix/com.h"
++! 793 "/usr/include/minix/com.h"
++! 805 "/usr/include/minix/com.h"
++! 995 "/usr/include/minix/com.h"
+ ! 1 "/usr/include/ibm/interrupt.h"
+ ! 59 "/usr/include/ibm/interrupt.h"
+ ! 1 "include/archconst.h"
+@@ -61,7 +61,7 @@
+ ! 60 "/usr/include/ansi.h"
+ ! 3 "/usr/include/minix/debug.h"
+ ! 11 "/usr/include/minix/debug.h"
+-! 65 "./../../config.h"
++! 64 "./../../config.h"
+ ! 13 "./../../debug.h"
+ ! 43 "./../../debug.h"
+ ! 55 "./../../debug.h"
+@@ -74,16 +74,16 @@
+ ! 27 "./../../const.h"
+ ! 43 "./../../const.h"
+ ! 3 "./../../proc.h"
+-! 125 "./../../proc.h"
+-! 152 "./../../proc.h"
+-! 173 "./../../proc.h"
+-! 186 "./../../proc.h"
+-! 196 "./../../proc.h"
+-! 210 "./../../proc.h"
+-! 220 "./../../proc.h"
+-! 235 "./../../proc.h"
+-! 248 "./../../proc.h"
+-! 281 "./../../proc.h"
++! 123 "./../../proc.h"
++! 150 "./../../proc.h"
++! 171 "./../../proc.h"
++! 184 "./../../proc.h"
++! 194 "./../../proc.h"
++! 208 "./../../proc.h"
++! 218 "./../../proc.h"
++! 233 "./../../proc.h"
++! 246 "./../../proc.h"
++! 279 "./../../proc.h"
+ ! 3 "./sconst.h"
+ ! 1 "./../../const.h"
+ ! 5 "./sconst.h"
+diff -ruB src/kernel/arch/i386/mpx386.o.tmp orig_src/kernel/arch/i386/mpx386.o.tmp
+--- src/kernel/arch/i386/mpx386.o.tmp	2018-12-14 04:29:11.000000000 +0800
++++ orig_src/kernel/arch/i386/mpx386.o.tmp	2018-12-31 14:24:05.000000000 +0800
+@@ -31,14 +31,14 @@
+ # 81 "/usr/include/minix/const.h"
+ # 103 "/usr/include/minix/const.h"
+ # 25 "/usr/include/minix/com.h"
+-# 43 "/usr/include/minix/com.h"
+-# 172 "/usr/include/minix/com.h"
+-# 501 "/usr/include/minix/com.h"
+-# 525 "/usr/include/minix/com.h"
+-# 772 "/usr/include/minix/com.h"
+-# 796 "/usr/include/minix/com.h"
+-# 808 "/usr/include/minix/com.h"
+-# 998 "/usr/include/minix/com.h"
++# 40 "/usr/include/minix/com.h"
++# 169 "/usr/include/minix/com.h"
++# 498 "/usr/include/minix/com.h"
++# 522 "/usr/include/minix/com.h"
++# 769 "/usr/include/minix/com.h"
++# 793 "/usr/include/minix/com.h"
++# 805 "/usr/include/minix/com.h"
++# 995 "/usr/include/minix/com.h"
+ # 1 "/usr/include/ibm/interrupt.h"
+ # 59 "/usr/include/ibm/interrupt.h"
+ # 1 "include/archconst.h"
+@@ -57,7 +57,7 @@
+ # 60 "/usr/include/ansi.h"
+ # 3 "/usr/include/minix/debug.h"
+ # 11 "/usr/include/minix/debug.h"
+-# 65 "./../../config.h"
++# 64 "./../../config.h"
+ # 13 "./../../debug.h"
+ # 43 "./../../debug.h"
+ # 55 "./../../debug.h"
+@@ -70,16 +70,16 @@
+ # 27 "./../../const.h"
+ # 43 "./../../const.h"
+ # 3 "./../../proc.h"
+-# 125 "./../../proc.h"
+-# 152 "./../../proc.h"
+-# 173 "./../../proc.h"
+-# 186 "./../../proc.h"
+-# 196 "./../../proc.h"
+-# 210 "./../../proc.h"
+-# 220 "./../../proc.h"
+-# 235 "./../../proc.h"
+-# 248 "./../../proc.h"
+-# 281 "./../../proc.h"
++# 123 "./../../proc.h"
++# 150 "./../../proc.h"
++# 171 "./../../proc.h"
++# 184 "./../../proc.h"
++# 194 "./../../proc.h"
++# 208 "./../../proc.h"
++# 218 "./../../proc.h"
++# 233 "./../../proc.h"
++# 246 "./../../proc.h"
++# 279 "./../../proc.h"
+ # 3 "./sconst.h"
+ # 1 "./../../const.h"
+ # 5 "./sconst.h"
+Binary files src/kernel/arch/i386/protect.o and orig_src/kernel/arch/i386/protect.o differ
+Binary files src/kernel/arch/i386/system.o and orig_src/kernel/arch/i386/system.o differ
+Binary files src/kernel/clock.o and orig_src/kernel/clock.o differ
+diff -ruB src/kernel/config.h orig_src/kernel/config.h
+--- src/kernel/config.h	2018-12-14 04:29:11.000000000 +0800
++++ orig_src/kernel/config.h	2018-12-31 14:24:05.000000000 +0800
+@@ -16,7 +16,6 @@
+  * to keep all kernel calls enabled.
+  */
+ #define USE_FORK       	   1	/* fork a new process */
+-#define USE_CHDEADLINE     1
+ #define USE_NEWMAP     	   1	/* set a new memory map */
+ #define USE_EXEC       	   1	/* update process after execute */
+ #define USE_EXIT	   1	/* clean up after process exit */
+Binary files src/kernel/kernel and orig_src/kernel/kernel differ
+diff -ruB src/kernel/kernel.h orig_src/kernel/kernel.h
+--- src/kernel/kernel.h	2018-12-14 04:29:11.000000000 +0800
++++ orig_src/kernel/kernel.h	2018-12-31 14:24:05.000000000 +0800
+@@ -10,8 +10,6 @@
+  * (non-zero) is set in monitor
+  */
+ #define CONFIG_WATCHDOG
+-
+-/* #define SCHEDULER_SWITCH */
+ /* We only support 1 cpu now */
+ #define CONFIG_MAX_CPUS	1
+ #define cpuid		0
+diff -ruB src/kernel/main.c orig_src/kernel/main.c
+--- src/kernel/main.c	2018-12-14 04:29:11.000000000 +0800
++++ orig_src/kernel/main.c	2018-12-31 14:24:05.000000000 +0800
+@@ -78,7 +78,6 @@
+ 	rp = proc_addr(ip->proc_nr);		/* get process pointer */
+ 	ip->endpoint = rp->p_endpoint;		/* ipc endpoint */
+ 	rp->p_max_priority = ip->priority;	/* max scheduling priority */
+-  rp->p_deadline.tmr_exp_time = 0;
+ 	rp->p_priority = ip->priority;		/* current priority */
+ 	rp->p_quantum_size = ip->quantum;	/* quantum size in ticks */
+ 	rp->p_ticks_left = ip->quantum;		/* current credit */
+Binary files src/kernel/main.o and orig_src/kernel/main.o differ
+diff -ruB src/kernel/proc.c orig_src/kernel/proc.c
+--- src/kernel/proc.c	2018-12-14 05:15:11.000000000 +0800
++++ orig_src/kernel/proc.c	2018-12-31 14:24:05.000000000 +0800
+@@ -44,7 +44,6 @@
+ #include "kernel.h"
+ #include "proc.h"
+ #include "vm.h"
+-#include <stdlib.h>
+ 
+ /* Scheduling and message passing functions. The functions are available to 
+  * other parts of the kernel through lock_...(). The lock temporarily disables 
+@@ -83,8 +82,6 @@
+ 		break;							\
+ 	}
+ 
+-static int sched_type = 0;
+-
+ /*===========================================================================*
+  *				QueueMess				     * 
+  *===========================================================================*/
+@@ -1389,9 +1386,6 @@
+    * so that it can immediately run. The queue to use simply is always the
+    * process' current priority. 
+    */
+-  if(rp->p_deadline.tmr_exp_time > 0)
+-  	  rp->p_priority = 7;
+-
+   *queue = rp->p_priority;
+   *front = time_left;
+ }
+@@ -1405,128 +1399,26 @@
+  * When a billable process is selected, record it in 'bill_ptr', so that the 
+  * clock task can tell who to bill for system time.
+  */
+-  if (sched_type == 0) {
+-	  register struct proc *rp;			/* process to run */
+-	  int q;				/* iterate over queues */
+-
+-	  /* Check each of the scheduling queues for ready processes. The number of
+-       * queues is defined in proc.h, and priorities are set in the task table.
+-       * The lowest queue contains IDLE, which is always ready.
+-       */
+-	  for (q=0; q < NR_SCHED_QUEUES; q++) {
+-		  if(!(rp = rdy_head[q])) {
+-			  TRACE(VF_PICKPROC, printf("queue %d empty\n", q););
+-			  continue;
+-		  }
+-		  TRACE(VF_PICKPROC, printf("found %s / %d on queue %d\n",
+-									rp->p_name, rp->p_endpoint, q););
+-		  vmassert(!proc_is_runnable(rp));
+-		  if (priv(rp)->s_flags & BILLABLE)
+-			  bill_ptr = rp;		/* bill for system time */
+-		  /*printf("schedt:%d\n",sched_type);*/
+-		  return rp;
+-	  }
+-	  return NULL;
+-  }
+-  else if (sched_type == 1) {
+-	  register struct proc *rp;			/* process to run */
+-	  int q;				/* iterate over queues */
+-	  int total_tickets=0;
+-	  int winner;
+-
+-	  for (q=0; q < 6; q++) {
+-		  if(!(rp = rdy_head[q])) {
+-			  TRACE(VF_PICKPROC, printf("queue %d empty\n", q););
+-			  continue;
+-		  }
+-		  TRACE(VF_PICKPROC, printf("found %s / %d on queue %d\n",
+-									rp->p_name, rp->p_endpoint, q););
+-		  vmassert(!proc_is_runnable(rp));
+-		  if (priv(rp)->s_flags & BILLABLE)
+-			  bill_ptr = rp;		/* bill for system time */
+-		  /*printf("schedt:%d\n",sched_type);*/
+-		  return rp;
+-	  }
++  register struct proc *rp;			/* process to run */
++  int q;				/* iterate over queues */
+ 
+-	  for (q=6; q < NR_SCHED_QUEUES; q++) {
+-		  if (!(rp = rdy_head[q])) {
+-			  TRACE(VF_PICKPROC, printf("queue %d empty\n", q););
+-			  continue;
+-		  }
+-		  /*rp = rdy_head[q];*/
+-		  while (rp != NIL_PROC) {
+-			  if(rp->p_rts_flags==0){
+-				  total_tickets += NR_SCHED_QUEUES - q;
+-			  }
+-			  rp = rp->p_nextready;
+-		  }
+-	  }
+-	  /*printf("total tickets is: %d\n",total_tickets);*/
+-	  if (total_tickets > 0) {
+-		  u64_t r;
+-		  read_tsc_64(&r);
+-		  srand((unsigned int)r.lo);
+-		  winner = rand() % total_tickets;
+-		  /*printf("winner is: %d\n",winner);*/
+-		  for (q=6; q < NR_SCHED_QUEUES; q++) {
+-			  rp = rdy_head[q];
+-			  while (rp != NIL_PROC) {
+-				  if(rp->p_rts_flags==0){
+-					  winner -= NR_SCHED_QUEUES - q;
+-					  if (winner < 0) {
+-						  /* pick the winner and return*/
+-						  TRACE(VF_PICKPROC, printf("found %s / %d on queue %d\n", rp->p_name, rp->p_endpoint, q););
+-						  vmassert(!proc_is_runnable(rp));
+-						  if (priv(rp)->s_flags & BILLABLE)
+-							  bill_ptr = rp;		/* bill for system time */
+-						  /*printf("schedt:%d\n",sched_type);*/
+-						  return rp;
+-					  }
+-				  }
+-				  rp = rp->p_nextready;
+-			  }
+-		  }
+-	  }
+-	  /*printf("Return null!\n");*/
+-	  return NULL;
+-  }
+-  else if (sched_type == 2) {
+-	  register struct proc *rp;			/* process to run */
+-	  register struct proc *tmp;
+-	  int q;				/* iterate over queues */
+-
+-	  TRACE(VF_PICKPROC, printf("sched type: %d\n", sched_type););
+-	  /* Check each of the scheduling queues for ready processes. The number of
+-       * queues is defined in proc.h, and priorities are set in the task table.
+-       * The lowest queue contains IDLE, which is always ready.
+-       */
+-	  for (q=0; q < NR_SCHED_QUEUES; q++) {
+-		  if(!(rp = rdy_head[q])) {
+-			  TRACE(VF_PICKPROC, printf("queue %d empty\n", q););
+-			  continue;
+-		  }
+-		  if (q == 7) {
+-			  tmp = rp;
+-			  /* sort according to the deadlines */
+-			  while (tmp != NIL_PROC) {
+-				  if (tmp->p_deadline.tmr_exp_time > 0
+-					  && (rp->p_deadline.tmr_exp_time == 0
+-						  || (rp->p_deadline.tmr_exp_time > 0)
+-							 && (tmp->p_deadline.tmr_exp_time < rp->p_deadline.tmr_exp_time)) )
+-					  rp = tmp;
+-				  tmp = tmp->p_nextready;
+-			  }
+-		  }
+-		  TRACE(VF_PICKPROC, printf("found %s / %d on queue %d\n",
+-									rp->p_name, rp->p_endpoint, q););
+-		  vmassert(!proc_is_runnable(rp));
+-		  if (priv(rp)->s_flags & BILLABLE)
+-			  bill_ptr = rp;		/* bill for system time */
+-		  /*printf("schedt:%d\n",sched_type);*/
+-		  return rp;
+-	  }
+-	  return NULL;
++  /* Check each of the scheduling queues for ready processes. The number of
++   * queues is defined in proc.h, and priorities are set in the task table.
++   * The lowest queue contains IDLE, which is always ready.
++   */
++  for (q=0; q < NR_SCHED_QUEUES; q++) {	
++	if(!(rp = rdy_head[q])) {
++		TRACE(VF_PICKPROC, printf("queue %d empty\n", q););
++		continue;
++	}
++	TRACE(VF_PICKPROC, printf("found %s / %d on queue %d\n", 
++		rp->p_name, rp->p_endpoint, q););
++	vmassert(!proc_is_runnable(rp));
++	if (priv(rp)->s_flags & BILLABLE)	 	
++		bill_ptr = rp;		/* bill for system time */
++	return rp;
+   }
++  return NULL;
+ }
+ 
+ /*===========================================================================*
+@@ -1648,25 +1540,3 @@
+ 	return ok;
+ }
+ 
+-PUBLIC int set_scheduler(scheduler_type)
+-int scheduler_type;
+-{
+-	switch (scheduler_type) {
+-		/* default scheduler round robin */
+-		case 0:
+-			sched_type = 0;
+-			break;
+-		/* lottery scheduler */
+-		case 1:
+-			sched_type = 1;
+-			break;
+-		/* edf scheduler */
+-		case 2:
+-			sched_type = 2;
+-			break;
+-		default:
+-			sched_type = 0;
+-			break;
+-	}
+-	return 0;
+-}
+diff -ruB src/kernel/proc.h orig_src/kernel/proc.h
+--- src/kernel/proc.h	2018-12-14 04:29:11.000000000 +0800
++++ orig_src/kernel/proc.h	2018-12-31 14:24:05.000000000 +0800
+@@ -25,8 +25,6 @@
+   short p_rts_flags;		/* process is runnable only if zero */
+   short p_misc_flags;		/* flags that do not suspend the process */
+ 
+-  timer_t p_deadline;
+-
+   char p_priority;		/* current scheduling priority */
+   char p_max_priority;		/* maximum scheduling priority */
+   char p_ticks_left;		/* number of scheduling ticks left */
+@@ -266,12 +264,8 @@
+ #define isusern(n)        ((n) >= 0)
+ #define isrootsysn(n)	  ((n) == ROOT_SYS_PROC_NR)
+ 
+-
+-
+ #ifndef __ASSEMBLY__
+ 
+-_PROTOTYPE( int set_scheduler, (int scheduler_type));
+-
+ /* The process table and pointers to process table slots. The pointers allow
+  * faster access because now a process entry can be found by indexing the
+  * pproc_addr array, while accessing an element i requires a multiplication
+Binary files src/kernel/proc.o and orig_src/kernel/proc.o differ
+Binary files src/kernel/profile.o and orig_src/kernel/profile.o differ
+diff -ruB src/kernel/start.c orig_src/kernel/start.c
+--- src/kernel/start.c	2018-12-14 04:36:40.000000000 +0800
++++ orig_src/kernel/start.c	2018-12-31 14:24:05.000000000 +0800
+@@ -93,29 +93,6 @@
+ 	  watchdog_enabled = atoi(value);
+ #endif
+ 
+-  value = get_value(params_buffer, "scheduler");
+-  if (value) {
+-      int tmp = atoi(value);
+-    switch (tmp) {
+-        case 0:
+-          set_scheduler(0);
+-          printf("default scheduler!\n");
+-          break;
+-        case 1:
+-          set_scheduler(1);
+-          printf("lottery scheduler!\n");
+-          break;
+-        case 2:
+-          set_scheduler(2);
+-          printf("edf scheduler!\n");
+-          break;
+-        default:
+-          set_scheduler(0);
+-          printf("default scheduler!\n");
+-          break;
+-    }
+-  }
+-
+   /* Return to assembler code to switch to protected mode (if 286), 
+    * reload selectors and call main().
+    */
+diff -ruB src/kernel/system/Makefile orig_src/kernel/system/Makefile
+--- src/kernel/system/Makefile	2018-12-14 04:29:11.000000000 +0800
++++ orig_src/kernel/system/Makefile	2018-12-31 14:24:05.000000000 +0800
+@@ -23,7 +23,6 @@
+ 
+ OBJECTS	= \
+ 	$(SYSTEM)(do_unused.o) \
+-	$(SYSTEM)(do_chdeadline.o) \
+ 	$(SYSTEM)(do_fork.o) \
+ 	$(SYSTEM)(do_exec.o) \
+ 	$(SYSTEM)(do_newmap.o) \
+@@ -75,9 +74,6 @@
+ $(SYSTEM)(do_unused.o):	do_unused.c
+ 	$(CC) do_unused.c
+ 
+-$(SYSTEM)(do_chdeadline.o):	do_chdeadline.c
+-	$(CC) do_chdeadline.c
+-
+ $(SYSTEM)(do_fork.o):	do_fork.c
+ 	$(CC) do_fork.c
+ 
+Binary files src/kernel/system/build and orig_src/kernel/system/build differ
+Only in src/kernel/system: do_chdeadline.c
+Only in src/kernel/system: do_chdeadline.o
+Binary files src/kernel/system/do_devio.o and orig_src/kernel/system/do_devio.o differ
+Binary files src/kernel/system/do_endksig.o and orig_src/kernel/system/do_endksig.o differ
+Binary files src/kernel/system/do_exec.o and orig_src/kernel/system/do_exec.o differ
+diff -ruB src/kernel/system/do_exit.c orig_src/kernel/system/do_exit.c
+--- src/kernel/system/do_exit.c	2018-12-14 04:29:11.000000000 +0800
++++ orig_src/kernel/system/do_exit.c	2018-12-31 14:24:05.000000000 +0800
+@@ -67,8 +67,6 @@
+ 
+   /* Turn off any alarm timers at the clock. */   
+   reset_timer(&priv(rc)->s_alarm_timer);
+-  reset_timer(&rc->p_deadline);
+-  rc->p_deadline.tmr_exp_time = 0;
+ 
+   /* Make sure that the exiting process is no longer scheduled,
+    * and mark slot as FREE. Also mark saved fpu contents as not significant.
+Binary files src/kernel/system/do_exit.o and orig_src/kernel/system/do_exit.o differ
+Binary files src/kernel/system/do_fork.o and orig_src/kernel/system/do_fork.o differ
+Binary files src/kernel/system/do_getinfo.o and orig_src/kernel/system/do_getinfo.o differ
+Binary files src/kernel/system/do_getksig.o and orig_src/kernel/system/do_getksig.o differ
+Binary files src/kernel/system/do_irqctl.o and orig_src/kernel/system/do_irqctl.o differ
+Binary files src/kernel/system/do_kill.o and orig_src/kernel/system/do_kill.o differ
+Binary files src/kernel/system/do_newmap.o and orig_src/kernel/system/do_newmap.o differ
+Binary files src/kernel/system/do_nice.o and orig_src/kernel/system/do_nice.o differ
+Binary files src/kernel/system/do_privctl.o and orig_src/kernel/system/do_privctl.o differ
+Binary files src/kernel/system/do_profbuf.o and orig_src/kernel/system/do_profbuf.o differ
+Binary files src/kernel/system/do_runctl.o and orig_src/kernel/system/do_runctl.o differ
+Binary files src/kernel/system/do_safecopy.o and orig_src/kernel/system/do_safecopy.o differ
+Binary files src/kernel/system/do_safemap.o and orig_src/kernel/system/do_safemap.o differ
+Binary files src/kernel/system/do_segctl.o and orig_src/kernel/system/do_segctl.o differ
+Binary files src/kernel/system/do_setalarm.o and orig_src/kernel/system/do_setalarm.o differ
+Binary files src/kernel/system/do_setgrant.o and orig_src/kernel/system/do_setgrant.o differ
+Binary files src/kernel/system/do_sigreturn.o and orig_src/kernel/system/do_sigreturn.o differ
+Binary files src/kernel/system/do_sigsend.o and orig_src/kernel/system/do_sigsend.o differ
+Binary files src/kernel/system/do_sysctl.o and orig_src/kernel/system/do_sysctl.o differ
+Binary files src/kernel/system/do_times.o and orig_src/kernel/system/do_times.o differ
+Binary files src/kernel/system/do_trace.o and orig_src/kernel/system/do_trace.o differ
+Binary files src/kernel/system/do_umap.o and orig_src/kernel/system/do_umap.o differ
+Binary files src/kernel/system/do_vdevio.o and orig_src/kernel/system/do_vdevio.o differ
+Binary files src/kernel/system/do_vmctl.o and orig_src/kernel/system/do_vmctl.o differ
+Binary files src/kernel/system/do_vtimer.o and orig_src/kernel/system/do_vtimer.o differ
+Binary files src/kernel/system.a and orig_src/kernel/system.a differ
+diff -ruB src/kernel/system.c orig_src/kernel/system.c
+--- src/kernel/system.c	2018-12-14 04:29:11.000000000 +0800
++++ orig_src/kernel/system.c	2018-12-31 14:24:05.000000000 +0800
+@@ -172,7 +170,6 @@
+   }
+ 
+   /* Process management. */
+-  map(SYS_CHDEADLINE, do_chdeadline);
+   map(SYS_FORK, do_fork); 		/* a process forked a new process */
+   map(SYS_EXEC, do_exec);		/* update process after execute */
+   map(SYS_EXIT, do_exit);		/* clean up after process exit */
+diff -ruB src/kernel/system.h orig_src/kernel/system.h
+--- src/kernel/system.h	2018-12-14 04:29:11.000000000 +0800
++++ orig_src/kernel/system.h	2018-12-31 14:24:05.000000000 +0800
+@@ -36,11 +36,6 @@
+ #include "proc.h"
+ 
+ /* Default handler for unused kernel calls. */
+-_PROTOTYPE( int do_chdeadline, (message *m_ptr));
+-#if ! USE_CHDEADLINE
+-#define do_chdeadline do_unused
+-#endif
+-
+ _PROTOTYPE( int do_unused, (message *m_ptr) );
+ 
+ _PROTOTYPE( int do_exec, (message *m_ptr) );		
+Binary files src/kernel/system.o and orig_src/kernel/system.o differ
+Binary files src/kernel/table.o and orig_src/kernel/table.o differ
+Binary files src/kernel/utility.o and orig_src/kernel/utility.o differ
+diff -ruB src/lib/ansi/ext_comp.c orig_src/lib/ansi/ext_comp.c
+--- src/lib/ansi/ext_comp.c	2018-12-14 04:29:11.000000000 +0800
++++ orig_src/lib/ansi/ext_comp.c	2018-12-31 14:24:11.000000000 +0800
+@@ -3,7 +3,7 @@
+   See the copyright notice in the ACK home directory, in the file "Copyright".
+ */
+ 
+-/* $Id$ */
++/* $Id: ext_comp.c 5628 2009-11-09 10:26:00Z thruby $ */
+ 
+ /* extended precision arithmetic for the strtod() and cvt() routines */
+ 
+diff -ruB src/lib/ansi/memcmp.c orig_src/lib/ansi/memcmp.c
+--- src/lib/ansi/memcmp.c	2018-12-14 04:29:11.000000000 +0800
++++ orig_src/lib/ansi/memcmp.c	2018-12-31 14:24:11.000000000 +0800
+@@ -2,7 +2,7 @@
+  * (c) copyright 1987 by the Vrije Universiteit, Amsterdam, The Netherlands.
+  * See the copyright notice in the ACK home directory, in the file "Copyright".
+  */
+-/* $Id$ */
++/* $Id: memcmp.c 5628 2009-11-09 10:26:00Z thruby $ */
+ 
+ #include	<string.h>
+ 
+diff -ruB src/lib/ansi/strcmp.c orig_src/lib/ansi/strcmp.c
+--- src/lib/ansi/strcmp.c	2018-12-14 04:29:11.000000000 +0800
++++ orig_src/lib/ansi/strcmp.c	2018-12-31 14:24:11.000000000 +0800
+@@ -2,7 +2,7 @@
+  * (c) copyright 1987 by the Vrije Universiteit, Amsterdam, The Netherlands.
+  * See the copyright notice in the ACK home directory, in the file "Copyright".
+  */
+-/* $Id$ */
++/* $Id: strcmp.c 5628 2009-11-09 10:26:00Z thruby $ */
+ 
+ #include	<string.h>
+ 
+diff -ruB src/lib/ansi/strncmp.c orig_src/lib/ansi/strncmp.c
+--- src/lib/ansi/strncmp.c	2018-12-14 04:29:11.000000000 +0800
++++ orig_src/lib/ansi/strncmp.c	2018-12-31 14:24:11.000000000 +0800
+@@ -2,7 +2,7 @@
+  * (c) copyright 1987 by the Vrije Universiteit, Amsterdam, The Netherlands.
+  * See the copyright notice in the ACK home directory, in the file "Copyright".
+  */
+-/* $Id$ */
++/* $Id: strncmp.c 5628 2009-11-09 10:26:00Z thruby $ */
+ 
+ #include	<string.h>
+ 
+diff -ruB src/lib/editline/Makefile.in orig_src/lib/editline/Makefile.in
+--- src/lib/editline/Makefile.in	2018-12-14 04:29:11.000000000 +0800
++++ orig_src/lib/editline/Makefile.in	2018-12-31 14:24:09.000000000 +0800
+@@ -1,4 +1,4 @@
+-##  $Revision$
++##  $Revision: 1390 $
+ ##
+ ##  Unix makefile for editline library.
+ ##
+diff -ruB src/lib/editline/README orig_src/lib/editline/README
+--- src/lib/editline/README	2018-12-14 04:29:11.000000000 +0800
++++ orig_src/lib/editline/README	2018-12-31 14:24:09.000000000 +0800
+@@ -1,4 +1,4 @@
+-$Revision$
++$Revision: 5628 $
+ 
+ This is a line-editing library.  It can be linked into almost any
+ program to provide command-line editing and recall.
+diff -ruB src/lib/editline/complete.c orig_src/lib/editline/complete.c
+--- src/lib/editline/complete.c	2018-12-14 04:29:11.000000000 +0800
++++ orig_src/lib/editline/complete.c	2018-12-31 14:24:09.000000000 +0800
+@@ -1,4 +1,4 @@
+-/*  $Revision$
++/*  $Revision: 5628 $
+ **
+ **  History and file completion functions for editline library.
+ */
+diff -ruB src/lib/editline/editline.c orig_src/lib/editline/editline.c
+--- src/lib/editline/editline.c	2018-12-14 04:29:11.000000000 +0800
++++ orig_src/lib/editline/editline.c	2018-12-31 14:24:09.000000000 +0800
+@@ -1,4 +1,4 @@
+-/*  $Revision$
++/*  $Revision: 5628 $
+ **
+ **  Main editing routines for editline library.
+ */
+diff -ruB src/lib/editline/editline.h orig_src/lib/editline/editline.h
+--- src/lib/editline/editline.h	2018-12-14 04:29:11.000000000 +0800
++++ orig_src/lib/editline/editline.h	2018-12-31 14:24:09.000000000 +0800
+@@ -1,4 +1,4 @@
+-/*  $Revision$
++/*  $Revision: 5628 $
+ **
+ **  Internal header file for editline library.
+ */
+diff -ruB src/lib/editline/sysunix.c orig_src/lib/editline/sysunix.c
+--- src/lib/editline/sysunix.c	2018-12-14 04:29:11.000000000 +0800
++++ orig_src/lib/editline/sysunix.c	2018-12-31 14:24:09.000000000 +0800
+@@ -1,4 +1,4 @@
+-/*  $Revision$
++/*  $Revision: 5628 $
+ **
+ **  Unix system-dependant routines for editline library.
+ */
+diff -ruB src/lib/editline/testit.c orig_src/lib/editline/testit.c
+--- src/lib/editline/testit.c	2018-12-14 04:29:11.000000000 +0800
++++ orig_src/lib/editline/testit.c	2018-12-31 14:24:09.000000000 +0800
+@@ -1,4 +1,4 @@
+-/*  $Revision$
++/*  $Revision: 5628 $
+ **
+ **  A "micro-shell" to test editline library.
+ **  If given any arguments, commands aren't executed.
+diff -ruB src/lib/editline/unix.h orig_src/lib/editline/unix.h
+--- src/lib/editline/unix.h	2018-12-14 04:29:11.000000000 +0800
++++ orig_src/lib/editline/unix.h	2018-12-31 14:24:09.000000000 +0800
+@@ -1,4 +1,4 @@
+-/*  $Revision$
++/*  $Revision: 5628 $
+ **
+ **  Editline system header file for Unix.
+ */
+diff -ruB src/lib/ip/ether.h orig_src/lib/ip/ether.h
+--- src/lib/ip/ether.h	2018-12-14 04:29:11.000000000 +0800
++++ orig_src/lib/ip/ether.h	2018-12-31 14:24:11.000000000 +0800
+@@ -1,4 +1,4 @@
+-/* $Id$ */
++/* $Id: ether.h 5628 2009-11-09 10:26:00Z thruby $ */
+ 
+ /* Interface definitions for ethernet access library */
+ 
+diff -ruB src/lib/ip/ethere2a.c orig_src/lib/ip/ethere2a.c
+--- src/lib/ip/ethere2a.c	2018-12-14 04:29:11.000000000 +0800
++++ orig_src/lib/ip/ethere2a.c	2018-12-31 14:24:11.000000000 +0800
+@@ -1,4 +1,4 @@
+-/* $Id$ */
++/* $Id: ethere2a.c 5628 2009-11-09 10:26:00Z thruby $ */
+ /* This file was part of the etherlib package. */
+ 
+ #include <stdio.h>
+Binary files src/lib/obj-ack/end.a and orig_src/lib/obj-ack/end.a differ
+Binary files src/lib/obj-ack/libc.a and orig_src/lib/obj-ack/libc.a differ
+Binary files src/lib/obj-ack/libcurses.a and orig_src/lib/obj-ack/libcurses.a differ
+Binary files src/lib/obj-ack/libd.a and orig_src/lib/obj-ack/libd.a differ
+Binary files src/lib/obj-ack/libe.a and orig_src/lib/obj-ack/libe.a differ
+Binary files src/lib/obj-ack/libedit.a and orig_src/lib/obj-ack/libedit.a differ
+Binary files src/lib/obj-ack/libfp.a and orig_src/lib/obj-ack/libfp.a differ
+Binary files src/lib/obj-ack/libm.a and orig_src/lib/obj-ack/libm.a differ
+Binary files src/lib/obj-ack/libm2.a and orig_src/lib/obj-ack/libm2.a differ
+Binary files src/lib/obj-ack/libp.a and orig_src/lib/obj-ack/libp.a differ
+Binary files src/lib/obj-ack/libsys.a and orig_src/lib/obj-ack/libsys.a differ
+Binary files src/lib/obj-ack/libtimers.a and orig_src/lib/obj-ack/libtimers.a differ
+Binary files src/lib/obj-ack/libutil.a and orig_src/lib/obj-ack/libutil.a differ
+Binary files src/lib/obj-ack/liby.a and orig_src/lib/obj-ack/liby.a differ
+diff -ruB src/lib/other/flock.c orig_src/lib/other/flock.c
+--- src/lib/other/flock.c	2018-12-14 04:29:11.000000000 +0800
++++ orig_src/lib/other/flock.c	2018-12-31 14:24:09.000000000 +0800
+@@ -4,7 +4,7 @@
+  * Porting to Minix 2.0.0
+  * Author:	Giovanni Falzoni <gfalzoni@pointest.com>
+  *
+- * $Id$
++ * $Id: flock.c 1291 2005-10-31 14:31:05Z beng $
+  */
+ #include <sys/types.h>
+ #include <fcntl.h>
+diff -ruB src/lib/other/syslog.c orig_src/lib/other/syslog.c
+--- src/lib/other/syslog.c	2018-12-14 04:29:11.000000000 +0800
++++ orig_src/lib/other/syslog.c	2018-12-31 14:24:09.000000000 +0800
+@@ -39,7 +39,7 @@
+  * Rewritten by Martin Mares <mj@atrey.karlin.mff.cuni.cz> on May 14, 1997
+  * Rewritten by G. Falzoni <gfalzoni@inwind.it> for porting to Minix
+  *
+- * $Id$
++ * $Id: syslog.c 2015 2006-04-03 15:03:07Z beng $
+  */
+ #include <sys/types.h>
+ #include <stdlib.h>
+diff -ruB src/lib/posix/Makedepend-ack orig_src/lib/posix/Makedepend-ack
+--- src/lib/posix/Makedepend-ack	2018-12-14 04:29:11.000000000 +0800
++++ orig_src/lib/posix/Makedepend-ack	2018-12-31 14:24:11.000000000 +0800
+@@ -15,7 +15,6 @@
+ 	mkdep 'cc -O -D_MINIX -D_POSIX_SOURCE -E' _close.c | sed -e 's:^\(.\):../obj-ack/./posix/\1:' >> .depend-ack
+ 	mkdep 'cc -O -D_MINIX -D_POSIX_SOURCE -E' _closedir.c | sed -e 's:^\(.\):../obj-ack/./posix/\1:' >> .depend-ack
+ 	mkdep 'cc -O -D_MINIX -D_POSIX_SOURCE -E' _creat.c | sed -e 's:^\(.\):../obj-ack/./posix/\1:' >> .depend-ack
+-	mkdep 'cc -O -D_MINIX -D_POSIX_SOURCE -E' _chdeadline.c | sed -e 's:^\(.\):../obj-ack/./posix/\1:' >> .depend-ack
+ 	mkdep 'cc -O -D_MINIX -D_POSIX_SOURCE -E' _dup.c | sed -e 's:^\(.\):../obj-ack/./posix/\1:' >> .depend-ack
+ 	mkdep 'cc -O -D_MINIX -D_POSIX_SOURCE -E' _dup2.c | sed -e 's:^\(.\):../obj-ack/./posix/\1:' >> .depend-ack
+ 	mkdep 'cc -O -D_MINIX -D_POSIX_SOURCE -E' _execl.c | sed -e 's:^\(.\):../obj-ack/./posix/\1:' >> .depend-ack
+diff -ruB src/lib/posix/Makedepend-gnu orig_src/lib/posix/Makedepend-gnu
+--- src/lib/posix/Makedepend-gnu	2018-12-14 04:29:11.000000000 +0800
++++ orig_src/lib/posix/Makedepend-gnu	2018-12-31 14:24:11.000000000 +0800
+@@ -15,7 +15,6 @@
+ 	mkdep 'gcc -O -D_MINIX -D_POSIX_SOURCE -E' _close.c | sed -e '/<built-in>/d' -e '/<command line>/d' -e 's:^\(.\):../obj-gnu/./posix/\1:' >> .depend-gnu
+ 	mkdep 'gcc -O -D_MINIX -D_POSIX_SOURCE -E' _closedir.c | sed -e '/<built-in>/d' -e '/<command line>/d' -e 's:^\(.\):../obj-gnu/./posix/\1:' >> .depend-gnu
+ 	mkdep 'gcc -O -D_MINIX -D_POSIX_SOURCE -E' _creat.c | sed -e '/<built-in>/d' -e '/<command line>/d' -e 's:^\(.\):../obj-gnu/./posix/\1:' >> .depend-gnu
+-	mkdep 'gcc -O -D_MINIX -D_POSIX_SOURCE -E' _chdeadline.c | sed -e '/<built-in>/d' -e '/<command line>/d' -e 's:^\(.\):../obj-gnu/./posix/\1:' >> .depend-gnu
+ 	mkdep 'gcc -O -D_MINIX -D_POSIX_SOURCE -E' _dup.c | sed -e '/<built-in>/d' -e '/<command line>/d' -e 's:^\(.\):../obj-gnu/./posix/\1:' >> .depend-gnu
+ 	mkdep 'gcc -O -D_MINIX -D_POSIX_SOURCE -E' _dup2.c | sed -e '/<built-in>/d' -e '/<command line>/d' -e 's:^\(.\):../obj-gnu/./posix/\1:' >> .depend-gnu
+ 	mkdep 'gcc -O -D_MINIX -D_POSIX_SOURCE -E' _execl.c | sed -e '/<built-in>/d' -e '/<command line>/d' -e 's:^\(.\):../obj-gnu/./posix/\1:' >> .depend-gnu
+diff -ruB src/lib/posix/Makefile orig_src/lib/posix/Makefile
+--- src/lib/posix/Makefile	2018-12-14 04:29:11.000000000 +0800
++++ orig_src/lib/posix/Makefile	2018-12-31 14:24:11.000000000 +0800
+@@ -33,7 +33,6 @@
+ ../obj-ack/libc.a: ../obj-ack/libc.a(_close.o)
+ ../obj-ack/libc.a: ../obj-ack/libc.a(_closedir.o)
+ ../obj-ack/libc.a: ../obj-ack/libc.a(_creat.o)
+-../obj-ack/libc.a: ../obj-ack/libc.a(_chdeadline.o)
+ ../obj-ack/libc.a: ../obj-ack/libc.a(_dup.o)
+ ../obj-ack/libc.a: ../obj-ack/libc.a(_dup2.o)
+ ../obj-ack/libc.a: ../obj-ack/libc.a(_execl.o)
+@@ -156,8 +155,6 @@
+ 	cc -O -D_MINIX -D_POSIX_SOURCE -c -o ../obj-ack/./posix/_closedir.o _closedir.c
+ ../obj-ack/libc.a(_creat.o): _creat.c
+ 	cc -O -D_MINIX -D_POSIX_SOURCE -c -o ../obj-ack/./posix/_creat.o _creat.c
+-../obj-ack/libc.a(_chdeadline.o): _chdeadline.c
+-	cc -O -D_MINIX -D_POSIX_SOURCE -c -o ../obj-ack/./posix/_chdeadline.o _chdeadline.c
+ ../obj-ack/libc.a(_dup.o): _dup.c
+ 	cc -O -D_MINIX -D_POSIX_SOURCE -c -o ../obj-ack/./posix/_dup.o _dup.c
+ ../obj-ack/libc.a(_dup2.o): _dup2.c
+@@ -353,7 +350,6 @@
+ ../obj-gnu/libc.a: ../obj-gnu/./posix/_close.o
+ ../obj-gnu/libc.a: ../obj-gnu/./posix/_closedir.o
+ ../obj-gnu/libc.a: ../obj-gnu/./posix/_creat.o
+-../obj-gnu/libc.a: ../obj-gnu/./posix/_chdeadline.o
+ ../obj-gnu/libc.a: ../obj-gnu/./posix/_dup.o
+ ../obj-gnu/libc.a: ../obj-gnu/./posix/_dup2.o
+ ../obj-gnu/libc.a: ../obj-gnu/./posix/_execl.o
+@@ -489,9 +485,6 @@
+ ../obj-gnu/./posix/_creat.o: _creat.c
+ 	gcc -O -D_MINIX -D_POSIX_SOURCE -c -o ../obj-gnu/./posix/_creat.o _creat.c
+ 
+-../obj-gnu/./posix/_chdeadline.o: _chdeadline.c
+-	gcc -O -D_MINIX -D_POSIX_SOURCE -c -o ../obj-gnu/./posix/_chdeadline.o _chdeadline.c
+-
+ ../obj-gnu/./posix/_dup.o: _dup.c
+ 	gcc -O -D_MINIX -D_POSIX_SOURCE -c -o ../obj-gnu/./posix/_dup.o _dup.c
+ 
+diff -ruB src/lib/posix/Makefile.in orig_src/lib/posix/Makefile.in
+--- src/lib/posix/Makefile.in	2018-12-14 04:29:11.000000000 +0800
++++ orig_src/lib/posix/Makefile.in	2018-12-31 14:24:11.000000000 +0800
+@@ -19,7 +19,6 @@
+ 	_close.c \
+ 	_closedir.c \
+ 	_creat.c \
+-	_chdeadline.c \
+ 	_dup.c \
+ 	_dup2.c \
+ 	_execl.c \
+Only in src/lib/posix: _chdeadline.c
+diff -ruB src/lib/stdio/flushbuf.c orig_src/lib/stdio/flushbuf.c
+--- src/lib/stdio/flushbuf.c	2018-12-14 04:29:11.000000000 +0800
++++ orig_src/lib/stdio/flushbuf.c	2018-12-31 14:24:09.000000000 +0800
+@@ -1,7 +1,7 @@
+ /*
+  * flushbuf.c - flush a buffer
+  */
+-/* $Id$ */
++/* $Id: flushbuf.c 5628 2009-11-09 10:26:00Z thruby $ */
+ 
+ #include	<stdio.h>
+ #include	<stdlib.h>
+diff -ruB src/lib/stdio/setvbuf.c orig_src/lib/stdio/setvbuf.c
+--- src/lib/stdio/setvbuf.c	2018-12-14 04:29:11.000000000 +0800
++++ orig_src/lib/stdio/setvbuf.c	2018-12-31 14:24:09.000000000 +0800
+@@ -1,7 +1,7 @@
+ /*
+  * setbuf.c - control buffering of a stream
+  */
+-/* $Id$ */
++/* $Id: setvbuf.c 5628 2009-11-09 10:26:00Z thruby $ */
+ 
+ #include	<stdio.h>
+ #include	<stdlib.h>
+diff -ruB src/lib/syscall/Makedepend-ack orig_src/lib/syscall/Makedepend-ack
+--- src/lib/syscall/Makedepend-ack	2018-12-14 04:29:11.000000000 +0800
++++ orig_src/lib/syscall/Makedepend-ack	2018-12-31 14:24:11.000000000 +0800
+@@ -8,7 +8,6 @@
+ 	mkdep 'cc  -E' alarm.s | sed -e 's:^\(.\):../obj-ack/./syscall/\1:' >> .depend-ack
+ 	mkdep 'cc  -E' brk.s | sed -e 's:^\(.\):../obj-ack/./syscall/\1:' >> .depend-ack
+ 	mkdep 'cc  -E' cfgetispeed.s | sed -e 's:^\(.\):../obj-ack/./syscall/\1:' >> .depend-ack
+-	mkdep 'cc  -E' chdeadline.s | sed -e 's:^\(.\):../obj-ack/./syscall/\1:' >> .depend-ack
+ 	mkdep 'cc  -E' cfgetospeed.s | sed -e 's:^\(.\):../obj-ack/./syscall/\1:' >> .depend-ack
+ 	mkdep 'cc  -E' cfsetispeed.s | sed -e 's:^\(.\):../obj-ack/./syscall/\1:' >> .depend-ack
+ 	mkdep 'cc  -E' cfsetospeed.s | sed -e 's:^\(.\):../obj-ack/./syscall/\1:' >> .depend-ack
+diff -ruB src/lib/syscall/Makedepend-gnu orig_src/lib/syscall/Makedepend-gnu
+--- src/lib/syscall/Makedepend-gnu	2018-12-14 04:29:11.000000000 +0800
++++ orig_src/lib/syscall/Makedepend-gnu	2018-12-31 14:24:11.000000000 +0800
+@@ -8,7 +8,6 @@
+ 	mkdep 'gcc  -E -x assembler-with-cpp -I.' alarm.s | sed -e '/<built-in>/d' -e '/<command line>/d' -e 's:^\(.\):../obj-gnu/./syscall/\1:' >> .depend-gnu
+ 	mkdep 'gcc  -E -x assembler-with-cpp -I.' brk.s | sed -e '/<built-in>/d' -e '/<command line>/d' -e 's:^\(.\):../obj-gnu/./syscall/\1:' >> .depend-gnu
+ 	mkdep 'gcc  -E -x assembler-with-cpp -I.' cfgetispeed.s | sed -e '/<built-in>/d' -e '/<command line>/d' -e 's:^\(.\):../obj-gnu/./syscall/\1:' >> .depend-gnu
+-	mkdep 'gcc  -E -x assembler-with-cpp -I.' chdeadline.s | sed -e '/<built-in>/d' -e '/<command line>/d' -e 's:^\(.\):../obj-gnu/./syscall/\1:' >> .depend-gnu
+ 	mkdep 'gcc  -E -x assembler-with-cpp -I.' cfgetospeed.s | sed -e '/<built-in>/d' -e '/<command line>/d' -e 's:^\(.\):../obj-gnu/./syscall/\1:' >> .depend-gnu
+ 	mkdep 'gcc  -E -x assembler-with-cpp -I.' cfsetispeed.s | sed -e '/<built-in>/d' -e '/<command line>/d' -e 's:^\(.\):../obj-gnu/./syscall/\1:' >> .depend-gnu
+ 	mkdep 'gcc  -E -x assembler-with-cpp -I.' cfsetospeed.s | sed -e '/<built-in>/d' -e '/<command line>/d' -e 's:^\(.\):../obj-gnu/./syscall/\1:' >> .depend-gnu
+diff -ruB src/lib/syscall/Makefile orig_src/lib/syscall/Makefile
+--- src/lib/syscall/Makefile	2018-12-14 04:29:11.000000000 +0800
++++ orig_src/lib/syscall/Makefile	2018-12-31 14:24:11.000000000 +0800
+@@ -26,7 +26,6 @@
+ ../obj-ack/libc.a: ../obj-ack/libc.a(alarm.o)
+ ../obj-ack/libc.a: ../obj-ack/libc.a(brk.o)
+ ../obj-ack/libc.a: ../obj-ack/libc.a(cfgetispeed.o)
+-../obj-ack/libc.a: ../obj-ack/libc.a(chdeadline.o)
+ ../obj-ack/libc.a: ../obj-ack/libc.a(cfgetospeed.o)
+ ../obj-ack/libc.a: ../obj-ack/libc.a(cfsetispeed.o)
+ ../obj-ack/libc.a: ../obj-ack/libc.a(cfsetospeed.o)
+@@ -171,8 +170,6 @@
+ 	cc  -c -o ../obj-ack/./syscall/brk.o brk.s
+ ../obj-ack/libc.a(cfgetispeed.o): cfgetispeed.s
+ 	cc  -c -o ../obj-ack/./syscall/cfgetispeed.o cfgetispeed.s
+-../obj-ack/libc.a(chdeadline.o): chdeadline.s
+-	cc  -c -o ../obj-ack/./syscall/chdeadline.o chdeadline.s
+ ../obj-ack/libc.a(cfgetospeed.o): cfgetospeed.s
+ 	cc  -c -o ../obj-ack/./syscall/cfgetospeed.o cfgetospeed.s
+ ../obj-ack/libc.a(cfsetispeed.o): cfsetispeed.s
+@@ -433,7 +430,6 @@
+ ../obj-gnu/libc.a: ../obj-gnu/./syscall/alarm.o
+ ../obj-gnu/libc.a: ../obj-gnu/./syscall/brk.o
+ ../obj-gnu/libc.a: ../obj-gnu/./syscall/cfgetispeed.o
+-../obj-gnu/libc.a: ../obj-gnu/./syscall/chdeadline.o
+ ../obj-gnu/libc.a: ../obj-gnu/./syscall/cfgetospeed.o
+ ../obj-gnu/libc.a: ../obj-gnu/./syscall/cfsetispeed.o
+ ../obj-gnu/libc.a: ../obj-gnu/./syscall/cfsetospeed.o
+@@ -591,10 +587,6 @@
+ 	gcc  -E -x assembler-with-cpp -I. cfgetispeed.s | asmconv -mi386 ack gnu > ../obj-gnu/./syscall/cfgetispeed.s.gnu
+ 	gas -o ../obj-gnu/./syscall/cfgetispeed.o ../obj-gnu/./syscall/cfgetispeed.s.gnu
+ 
+-../obj-gnu/./syscall/chdeadline.o: chdeadline.s
+-	gcc  -E -x assembler-with-cpp -I. chdeadline.s | asmconv -mi386 ack gnu > ../obj-gnu/./syscall/chdeadline.s.gnu
+-	gas -o ../obj-gnu/./syscall/chdeadline.o ../obj-gnu/./syscall/chdeadline.s.gnu
+-
+ ../obj-gnu/./syscall/cfgetospeed.o: cfgetospeed.s
+ 	gcc  -E -x assembler-with-cpp -I. cfgetospeed.s | asmconv -mi386 ack gnu > ../obj-gnu/./syscall/cfgetospeed.s.gnu
+ 	gas -o ../obj-gnu/./syscall/cfgetospeed.o ../obj-gnu/./syscall/cfgetospeed.s.gnu
+diff -ruB src/lib/syscall/Makefile.in orig_src/lib/syscall/Makefile.in
+--- src/lib/syscall/Makefile.in	2018-12-14 04:29:11.000000000 +0800
++++ orig_src/lib/syscall/Makefile.in	2018-12-31 14:24:11.000000000 +0800
+@@ -10,7 +10,6 @@
+ 	alarm.s \
+ 	brk.s \
+ 	cfgetispeed.s \
+-	chdeadline.s \
+ 	cfgetospeed.s \
+ 	cfsetispeed.s \
+ 	cfsetospeed.s \
+Only in src/lib/syscall: chdeadline.s
+diff -ruB src/lib/syslib/Makedepend-ack orig_src/lib/syslib/Makedepend-ack
+--- src/lib/syslib/Makedepend-ack	2018-12-14 04:29:11.000000000 +0800
++++ orig_src/lib/syslib/Makedepend-ack	2018-12-31 14:24:11.000000000 +0800
+@@ -27,7 +27,6 @@
+ 	mkdep 'cc -O -D_MINIX -D_POSIX_SOURCE -E' sef_liveupdate.c | sed -e 's:^\(.\):../obj-ack/./syslib/\1:' >> .depend-ack
+ 	mkdep 'cc -O -D_MINIX -D_POSIX_SOURCE -E' sef_ping.c | sed -e 's:^\(.\):../obj-ack/./syslib/\1:' >> .depend-ack
+ 	mkdep 'cc -O -D_MINIX -D_POSIX_SOURCE -E' sef_init.c | sed -e 's:^\(.\):../obj-ack/./syslib/\1:' >> .depend-ack
+-	mkdep 'cc -O -D_MINIX -D_POSIX_SOURCE -E' sys_chdeadline.c | sed -e 's:^\(.\):../obj-ack/./syslib/\1:' >> .depend-ack
+ 	mkdep 'cc -O -D_MINIX -D_POSIX_SOURCE -E' sys_abort.c | sed -e 's:^\(.\):../obj-ack/./syslib/\1:' >> .depend-ack
+ 	mkdep 'cc -O -D_MINIX -D_POSIX_SOURCE -E' sys_cprof.c | sed -e 's:^\(.\):../obj-ack/./syslib/\1:' >> .depend-ack
+ 	mkdep 'cc -O -D_MINIX -D_POSIX_SOURCE -E' sys_endsig.c | sed -e 's:^\(.\):../obj-ack/./syslib/\1:' >> .depend-ack
+diff -ruB src/lib/syslib/Makedepend-gnu orig_src/lib/syslib/Makedepend-gnu
+--- src/lib/syslib/Makedepend-gnu	2018-12-14 04:29:11.000000000 +0800
++++ orig_src/lib/syslib/Makedepend-gnu	2018-12-31 14:24:11.000000000 +0800
+@@ -27,7 +27,6 @@
+ 	mkdep 'gcc -O -D_MINIX -D_POSIX_SOURCE -E' sef_liveupdate.c | sed -e '/<built-in>/d' -e '/<command line>/d' -e 's:^\(.\):../obj-gnu/./syslib/\1:' >> .depend-gnu
+ 	mkdep 'gcc -O -D_MINIX -D_POSIX_SOURCE -E' sef_ping.c | sed -e '/<built-in>/d' -e '/<command line>/d' -e 's:^\(.\):../obj-gnu/./syslib/\1:' >> .depend-gnu
+ 	mkdep 'gcc -O -D_MINIX -D_POSIX_SOURCE -E' sef_init.c | sed -e '/<built-in>/d' -e '/<command line>/d' -e 's:^\(.\):../obj-gnu/./syslib/\1:' >> .depend-gnu
+-	mkdep 'gcc -O -D_MINIX -D_POSIX_SOURCE -E' sys_chdeadline.c | sed -e '/<built-in>/d' -e '/<command line>/d' -e 's:^\(.\):../obj-gnu/./syslib/\1:' >> .depend-gnu
+ 	mkdep 'gcc -O -D_MINIX -D_POSIX_SOURCE -E' sys_abort.c | sed -e '/<built-in>/d' -e '/<command line>/d' -e 's:^\(.\):../obj-gnu/./syslib/\1:' >> .depend-gnu
+ 	mkdep 'gcc -O -D_MINIX -D_POSIX_SOURCE -E' sys_cprof.c | sed -e '/<built-in>/d' -e '/<command line>/d' -e 's:^\(.\):../obj-gnu/./syslib/\1:' >> .depend-gnu
+ 	mkdep 'gcc -O -D_MINIX -D_POSIX_SOURCE -E' sys_endsig.c | sed -e '/<built-in>/d' -e '/<command line>/d' -e 's:^\(.\):../obj-gnu/./syslib/\1:' >> .depend-gnu
+diff -ruB src/lib/syslib/Makefile orig_src/lib/syslib/Makefile
+--- src/lib/syslib/Makefile	2018-12-14 04:29:11.000000000 +0800
++++ orig_src/lib/syslib/Makefile	2018-12-31 14:24:11.000000000 +0800
+@@ -45,7 +45,6 @@
+ ../obj-ack/libsys.a: ../obj-ack/libsys.a(sef_liveupdate.o)
+ ../obj-ack/libsys.a: ../obj-ack/libsys.a(sef_ping.o)
+ ../obj-ack/libsys.a: ../obj-ack/libsys.a(sef_init.o)
+-../obj-ack/libsys.a: ../obj-ack/libsys.a(sys_chdeadline.o)
+ ../obj-ack/libsys.a: ../obj-ack/libsys.a(sys_abort.o)
+ ../obj-ack/libsys.a: ../obj-ack/libsys.a(sys_cprof.o)
+ ../obj-ack/libsys.a: ../obj-ack/libsys.a(sys_endsig.o)
+@@ -160,8 +159,6 @@
+ 	cc -O -D_MINIX -D_POSIX_SOURCE -c -o ../obj-ack/./syslib/sef_ping.o sef_ping.c
+ ../obj-ack/libsys.a(sef_init.o): sef_init.c
+ 	cc -O -D_MINIX -D_POSIX_SOURCE -c -o ../obj-ack/./syslib/sef_init.o sef_init.c
+-../obj-ack/libsys.a(sys_chdeadline.o): sys_chdeadline.c
+-	cc -O -D_MINIX -D_POSIX_SOURCE -c -o ../obj-ack/./syslib/sys_chdeadline.o sys_chdeadline.c
+ ../obj-ack/libsys.a(sys_abort.o): sys_abort.c
+ 	cc -O -D_MINIX -D_POSIX_SOURCE -c -o ../obj-ack/./syslib/sys_abort.o sys_abort.c
+ ../obj-ack/libsys.a(sys_cprof.o): sys_cprof.c
+@@ -305,7 +302,6 @@
+ ../obj-gnu/libsys.a: ../obj-gnu/./syslib/sef_liveupdate.o
+ ../obj-gnu/libsys.a: ../obj-gnu/./syslib/sef_ping.o
+ ../obj-gnu/libsys.a: ../obj-gnu/./syslib/sef_init.o
+-../obj-gnu/libsys.a: ../obj-gnu/./syslib/sys_chdeadline.o
+ ../obj-gnu/libsys.a: ../obj-gnu/./syslib/sys_abort.o
+ ../obj-gnu/libsys.a: ../obj-gnu/./syslib/sys_cprof.o
+ ../obj-gnu/libsys.a: ../obj-gnu/./syslib/sys_endsig.o
+@@ -445,9 +441,6 @@
+ ../obj-gnu/./syslib/sef_init.o: sef_init.c
+ 	gcc -O -D_MINIX -D_POSIX_SOURCE -c -o ../obj-gnu/./syslib/sef_init.o sef_init.c
+ 
+-../obj-gnu/./syslib/sys_chdeadline.o: sys_chdeadline.c
+-	gcc -O -D_MINIX -D_POSIX_SOURCE -c -o ../obj-gnu/./syslib/sys_chdeadline.o sys_chdeadline.c
+-
+ ../obj-gnu/./syslib/sys_abort.o: sys_abort.c
+ 	gcc -O -D_MINIX -D_POSIX_SOURCE -c -o ../obj-gnu/./syslib/sys_abort.o sys_abort.c
+ 
+diff -ruB src/lib/syslib/Makefile.in orig_src/lib/syslib/Makefile.in
+--- src/lib/syslib/Makefile.in	2018-12-14 04:29:11.000000000 +0800
++++ orig_src/lib/syslib/Makefile.in	2018-12-31 14:24:11.000000000 +0800
+@@ -31,7 +31,6 @@
+ 	sef_liveupdate.c \
+ 	sef_ping.c \
+ 	sef_init.c \
+-	sys_chdeadline.c \
+ 	sys_abort.c \
+ 	sys_cprof.c \
+ 	sys_endsig.c \
+Only in src/lib/syslib: sys_chdeadline.c
+Binary files src/servers/hgfs/libhgfs/libhgfs.a and orig_src/servers/hgfs/libhgfs/libhgfs.a differ
+Binary files src/servers/inet/inet and orig_src/servers/inet/inet differ
+Binary files src/servers/is/dmp_kernel.o and orig_src/servers/is/dmp_kernel.o differ
+Binary files src/servers/is/dmp_vm.o and orig_src/servers/is/dmp_vm.o differ
+Binary files src/servers/is/is and orig_src/servers/is/is differ
+diff -ruB src/servers/pm/misc.c orig_src/servers/pm/misc.c
+--- src/servers/pm/misc.c	2018-12-14 04:29:12.000000000 +0800
++++ orig_src/servers/pm/misc.c	2018-12-31 14:24:13.000000000 +0800
+@@ -88,18 +88,6 @@
+ }
+ 
+ /*===========================================================================*
+- *        do_chdeadline            *
+- *===========================================================================*/
+-PUBLIC int do_chdeadline()
+-{
+-  sys_chdeadline(who_p, m_in.m2_l1);
+-  return (OK);
+-}
+-
+-
+-
+-
+-/*===========================================================================*
+  *				do_sysuname				     *
+  *===========================================================================*/
+ PUBLIC int do_sysuname()
+Binary files src/servers/pm/misc.o and orig_src/servers/pm/misc.o differ
+Binary files src/servers/pm/pm and orig_src/servers/pm/pm differ
+diff -ruB src/servers/pm/proto.h orig_src/servers/pm/proto.h
+--- src/servers/pm/proto.h	2018-12-14 04:29:12.000000000 +0800
++++ orig_src/servers/pm/proto.h	2018-12-31 14:24:13.000000000 +0800
+@@ -16,9 +16,6 @@
+ /* break.c */
+ _PROTOTYPE( int do_brk, (void)						);
+ 
+-/* chdeadline.c */
+-_PROTOTYPE( int do_chdeadline,(void)				);
+-
+ /* dma.c */
+ _PROTOTYPE( int do_adddma, (void)					);
+ _PROTOTYPE( int do_deldma, (void)					);
+diff -ruB src/servers/pm/table.c orig_src/servers/pm/table.c
+--- src/servers/pm/table.c	2018-12-14 10:39:06.000000000 +0800
++++ orig_src/servers/pm/table.c	2018-12-31 14:24:13.000000000 +0800
+@@ -81,7 +81,7 @@
+ 	no_sys,		/* 67 = unused	*/
+ 	no_sys,		/* 68 = unused  */
+ 	no_sys,		/* 69 = unused	*/
+-	do_chdeadline,			/* 70 = chrt	*/
++	no_sys,		/* 70 = unused	*/
+ 	do_sigaction,	/* 71 = sigaction   */
+ 	do_sigsuspend,	/* 72 = sigsuspend  */
+ 	do_sigpending,	/* 73 = sigpending  */
+Binary files src/servers/pm/table.o and orig_src/servers/pm/table.o differ
+Binary files src/servers/rs/main.o and orig_src/servers/rs/main.o differ
+Binary files src/servers/rs/memory.o and orig_src/servers/rs/memory.o differ
+Binary files src/servers/rs/rs and orig_src/servers/rs/rs differ
+Binary files src/servers/vm/main.o and orig_src/servers/vm/main.o differ
+Binary files src/servers/vm/utility.o and orig_src/servers/vm/utility.o differ
+Binary files src/servers/vm/vm and orig_src/servers/vm/vm differ
+Only in src/test: .DS_Store
+diff -ruB src/test/test1.c orig_src/test/test1.c
+--- src/test/test1.c	2018-12-14 10:20:51.000000000 +0800
++++ orig_src/test/test1.c	2018-12-31 14:24:04.000000000 +0800
+@@ -1,46 +1,148 @@
++/* test 1 */
++
+ #include <sys/types.h>
+ #include <sys/wait.h>
+ #include <errno.h>
+-#include <fcntl.h>
++#include <signal.h>
+ #include <stdlib.h>
+ #include <unistd.h>
+-#include <lib.h>
+ #include <stdio.h>
+-#include "time.h"
+-int main(int argc, char **argv){
+-  pid_t pid[5];
+-  int i;
+-  nice(-15);
+-  printf("Test start\n");
+-  for( i=0;i<5;i++){
+-    pid[i] = fork();
+-    if(pid[i]==0){
+-      int counter = 0;
+-      int counter2 = 0;
+-      pid_t pid = getpid();
+-      int begin, end, runningTime;
+-      nice(5-i);
+-      begin = time(NULL);
+-      while(counter2<2){
+-        counter =0;
+-        
+-        while(counter <1111111111){
+-          int x =10;
+-          int y =20;
+-          x = y*x;
+-          counter++;
+-        }
+-      counter2++;
+-      }
+-      end= time(NULL);
+-      runningTime =  (end-begin);
+-      printf("Number : %d has finished within time %d \n",i,runningTime);
+-      return 0;
+-    }
++
++#define SIGNUM 10
++#define MAX_ERROR 4
++#define ITERATIONS 10
++
++_VOLATILE int glov, gct;
++int errct;
++int subtest;
++
++_PROTOTYPE(int main, (int argc, char *argv []));
++_PROTOTYPE(void test1a, (void));
++_PROTOTYPE(void parent, (void));
++_PROTOTYPE(void child, (int i));
++_PROTOTYPE(void test1b, (void));
++_PROTOTYPE(void parent1, (int childpid));
++_PROTOTYPE(void func, (int s));
++_PROTOTYPE(void child1, (void));
++_PROTOTYPE(void e, (int n));
++_PROTOTYPE(void quit, (void));
++
++int main(argc, argv)
++int argc;
++char *argv[];
++{
++  int i, m = 0xFFFF;
++
++  sync();
++
++  if (argc == 2) m = atoi(argv[1]);
++
++  printf("Test  1 ");
++  fflush(stdout);		/* have to flush for child's benefit */
++
++  system("rm -rf DIR_01; mkdir DIR_01");
++  chdir("DIR_01");
++
++  for (i = 0; i < ITERATIONS; i++) {
++	if (m & 00001) test1a();
++	if (m & 00002) test1b();
+   }
+ 
+-  for(i=0;i<5;i++){
+-    waitpid(pid[i],NULL,0);
++  quit();
++  return(-1);			/* impossible */
++}
++
++void test1a()
++{
++  int i, n, pid;
++
++  subtest = 1;
++  n = 4;
++  for (i = 0; i < n; i++) {
++	if ((pid = fork())) {
++		if (pid < 0) {
++			printf("\nTest 1 fork failed\n");
++			exit(1);
++		}
++		parent();
++	} else
++		child(i);
++  }
++}
++
++void parent()
++{
++
++  int n;
++
++  n = getpid();
++  wait(&n);
++}
++
++void child(i)
++int i;
++{
++  int n;
++
++  n = getpid();
++  exit(100+i);
++}
++
++void test1b()
++{
++  int i, k;
++
++  subtest = 2;
++  for (i = 0; i < 4; i++) {
++	glov = 0;
++	signal(SIGNUM, func);
++	if ((k = fork())) {
++		if (k < 0) {
++			printf("Test 1 fork failed\n");
++			exit(1);
++		}
++		parent1(k);
++	} else
++		child1();
++  }
++}
++
++void parent1(childpid)
++int childpid;
++{
++
++  int n;
++
++  for (n = 0; n < 5000; n++);
++  while (kill(childpid, SIGNUM) < 0)	/* null statement */
++	;
++  wait(&n);
++}
++
++void func(s)
++int s;				/* for ANSI */
++{
++  glov++;
++  gct++;
++}
++
++void child1()
++{
++  while (glov == 0);
++  exit(gct);
++}
++
++void quit()
++{
++
++  chdir("..");
++  system("rm -rf DIR*");
++
++  if (errct == 0) {
++	printf("ok\n");
++	exit(0);
++  } else {
++	printf("%d errors\n", errct);
++	exit(1);
+   }
+-  return 0;
+ }
+diff -ruB src/test/test2.c orig_src/test/test2.c
+--- src/test/test2.c	2018-12-14 10:07:01.000000000 +0800
++++ orig_src/test/test2.c	2018-12-31 14:24:04.000000000 +0800
+@@ -1,49 +1,394 @@
++/* test 2 */
++
+ #include <sys/types.h>
++#include <sys/times.h>
+ #include <sys/wait.h>
+ #include <errno.h>
+-#include <fcntl.h>
++#include <signal.h>
+ #include <stdlib.h>
+ #include <unistd.h>
+-#include <lib.h>
++#include <time.h>
+ #include <stdio.h>
+-#include "time.h"
+-int main(int argc, char **argv){
+-  pid_t pid[5];
+-  int i;
+-  printf("Test start\n");
+-  /*chdeadline(2);*/
+-  nice(-10);
+-  for( i=0;i<5;i++){
+-    pid[i] = fork();
+-    if(pid[i]==0){
+-      int counter = 0;
+-      int counter2 = 0;
+-      pid_t pid = getpid();
+-      int begin, end, runningTime;
+-      printf("Child %d:\n", i);
+-      if (i != 3) chdeadline(20 - 2*i);
+-      else chdeadline(30);
+-      begin = time(NULL);
+-      while(counter2<2){
+-        counter =0;
+-        while(counter <1111111111){
+-          int x =10;
+-          int y =20;
+-          x = y*x;
+-          counter++;
+-        }
+-      counter2++;
+-      }
+-      end= time(NULL);
+-      runningTime =  (end-begin);
+-      printf("Child %d has finished within time %d \n",i,runningTime);
+-      return 0;
+-    }
++
++#define ITERATIONS 5
++#define MAX_ERROR 4
++
++int is, array[4], parsigs, parcum, sigct, cumsig, errct, subtest;
++int iteration, kk = 0, errct = 0;
++char buf[2048];
++
++_PROTOTYPE(int main, (int argc, char *argv []));
++_PROTOTYPE(void test2a, (void));
++_PROTOTYPE(void test2b, (void));
++_PROTOTYPE(void test2c, (void));
++_PROTOTYPE(void test2d, (void));
++_PROTOTYPE(void test2e, (void));
++_PROTOTYPE(void test2f, (void));
++_PROTOTYPE(void test2g, (void));
++_PROTOTYPE(void sigpip, (int s));
++_PROTOTYPE(void quit, (void));
++_PROTOTYPE(void e, (int n));
++
++int main(argc, argv)
++int argc;
++char *argv[];
++{
++  int i, m = 0xFFFF;
++
++  sync();
++
++  if (argc == 2) m = atoi(argv[1]);
++
++  printf("Test  2 ");
++  fflush(stdout);		/* have to flush for child's benefit */
++
++  system("rm -rf DIR_02; mkdir DIR_02");
++  chdir("DIR_02");
++
++  for (i = 0; i < ITERATIONS; i++) {
++	iteration = i;
++	if (m & 0001) test2a();
++	if (m & 0002) test2b();
++	if (m & 0004) test2c();
++	if (m & 0010) test2d();
++	if (m & 0020) test2e();
++	if (m & 0040) test2f();
++	if (m & 0100) test2g();
++  }
++  subtest = 100;
++  if (cumsig != ITERATIONS) e(101);
++  quit();
++  return(-1);			/* impossible */
++}
++
++void test2a()
++{
++/* Test pipes */
++
++  int fd[2];
++  int n, i, j, q = 0;
++
++  subtest = 1;
++  if (pipe(fd) < 0) {
++	printf("pipe error.  errno= %d\n", errno);
++	errct++;
++	quit();
++  }
++  i = fork();
++  if (i < 0) {
++	printf("fork failed\n");
++	errct++;
++	quit();
++  }
++  if (i != 0) {
++	/* Parent code */
++	close(fd[0]);
++	for (i = 0; i < 2048; i++) buf[i] = i & 0377;
++	for (q = 0; q < 8; q++) {
++		if (write(fd[1], buf, 2048) < 0) {
++			printf("write pipe err.  errno=%d\n", errno);
++			errct++;
++			quit();
++		}
++	}
++	close(fd[1]);
++	wait(&q);
++	if (q != 256 * 58) {
++		printf("wrong exit code %d\n", q);
++		errct++;
++		quit();
++	}
++  } else {
++	/* Child code */
++	close(fd[1]);
++	for (q = 0; q < 32; q++) {
++		n = read(fd[0], buf, 512);
++		if (n != 512) {
++			printf("read yielded %d bytes, not 512\n", n);
++			errct++;
++			quit();
++		}
++		for (j = 0; j < n; j++)
++			if ((buf[j] & 0377) != (kk & 0377)) {
++				printf("wrong data: %d %d %d \n ", 
++						j, buf[j] & 0377, kk & 0377);
++			} else {
++				kk++;
++			}
++	}
++	exit(58);
++  }
++}
++
++void test2b()
++{
++  int fd[2], n;
++  char buf[4];
++
++  subtest = 2;
++  sigct = 0;
++  signal(SIGPIPE, sigpip);
++  pipe(fd);
++  if (fork()) {
++	/* Parent */
++	close(fd[0]);
++	while (sigct == 0) {
++		write(fd[1], buf, 1);
++	}
++	wait(&n);
++  } else {
++	/* Child */
++	close(fd[0]);
++	close(fd[1]);
++	exit(0);
++  }
++}
++
++void test2c()
++{
++  int n;
++
++  subtest = 3;
++  signal(SIGINT, SIG_DFL);
++  is = 0;
++  if ((array[is++] = fork()) > 0) {
++	if ((array[is++] = fork()) > 0) {
++		if ((array[is++] = fork()) > 0) {
++			if ((array[is++] = fork()) > 0) {
++				signal(SIGINT, SIG_IGN);
++				kill(array[0], SIGINT);
++				kill(array[1], SIGINT);
++				kill(array[2], SIGINT);
++				kill(array[3], SIGINT);
++				wait(&n);
++				wait(&n);
++				wait(&n);
++				wait(&n);
++			} else {
++				pause();
++			}
++		} else {
++			pause();
++		}
++	} else {
++		pause();
++	}
++  } else {
++	pause();
++  }
++}
++
++void test2d()
++{
++
++  int pid, stat_loc, s;
++
++  /* Test waitpid. */
++  subtest = 4;
++
++  /* Test waitpid(pid, arg2, 0) */
++  pid = fork();
++  if (pid < 0) e(1);
++  if (pid > 0) {
++	/* Parent. */
++	s = waitpid(pid, &stat_loc, 0);
++	if (s != pid) e(2);
++	if (WIFEXITED(stat_loc) == 0) e(3);
++	if (WIFSIGNALED(stat_loc) != 0) e(4);
++	if (WEXITSTATUS(stat_loc) != 22) e(5);
++  } else {
++	/* Child */
++	exit(22);
++  }
++
++  /* Test waitpid(-1, arg2, 0) */
++  pid = fork();
++  if (pid < 0) e(6);
++  if (pid > 0) {
++	/* Parent. */
++	s = waitpid(-1, &stat_loc, 0);
++	if (s != pid) e(7);
++	if (WIFEXITED(stat_loc) == 0) e(8);
++	if (WIFSIGNALED(stat_loc) != 0) e(9);
++	if (WEXITSTATUS(stat_loc) != 33) e(10);
++  } else {
++	/* Child */
++	exit(33);
+   }
+ 
+-  for(i=0;i<5;i++){
+-    waitpid(pid[i],NULL,0);
++  /* Test waitpid(0, arg2, 0) */
++  pid = fork();
++  if (pid < 0) e(11);
++  if (pid > 0) {
++	/* Parent. */
++	s = waitpid(0, &stat_loc, 0);
++	if (s != pid) e(12);
++	if (WIFEXITED(stat_loc) == 0) e(13);
++	if (WIFSIGNALED(stat_loc) != 0) e(14);
++	if (WEXITSTATUS(stat_loc) != 44) e(15);
++  } else {
++	/* Child */
++	exit(44);
++  }
++
++  /* Test waitpid(0, arg2, WNOHANG) */
++  signal(SIGTERM, SIG_DFL);
++  pid = fork();
++  if (pid < 0) e(16);
++  if (pid > 0) {
++	/* Parent. */
++	s = waitpid(0, &stat_loc, WNOHANG);
++	if (s != 0) e(17);
++	if (kill(pid, SIGTERM) != 0) e(18);
++	if (waitpid(pid, &stat_loc, 0) != pid) e(19);
++	if (WIFEXITED(stat_loc) != 0) e(20);
++	if (WIFSIGNALED(stat_loc) == 0) e(21);
++	if (WTERMSIG(stat_loc) != SIGTERM) e(22);
++  } else {
++	/* Child */
++	pause();
++  }
++
++  /* Test some error conditions. */
++  errno = 9999;
++  if (waitpid(0, &stat_loc, 0) != -1) e(23);
++  if (errno != ECHILD) e(24);
++  errno = 9999;
++  if (waitpid(0, &stat_loc, WNOHANG) != -1) e(25);
++  if (errno != ECHILD) e(26);
++}
++
++void test2e()
++{
++
++  int pid1, pid2, stat_loc, s;
++
++  /* Test waitpid with two children. */
++  subtest = 5;
++  if (iteration > 1) return;		/* slow test, don't do it too much */
++  if ( (pid1 = fork())) {
++	/* Parent. */
++	if ( (pid2 = fork()) ) {
++		/* Parent. Collect second child first. */
++		s = waitpid(pid2, &stat_loc, 0);
++		if (s != pid2) e(1);
++		if (WIFEXITED(stat_loc) == 0) e(2);
++		if (WIFSIGNALED(stat_loc) != 0) e(3);
++		if (WEXITSTATUS(stat_loc) != 222) e(4);
++
++		/* Now collect first child. */
++		s = waitpid(pid1, &stat_loc, 0);
++		if (s != pid1) e(5);
++		if (WIFEXITED(stat_loc) == 0) e(6);
++		if (WIFSIGNALED(stat_loc) != 0) e(7);
++		if (WEXITSTATUS(stat_loc) != 111) e(8);
++	} else {
++		/* Child 2. */
++		sleep(2);		/* child 2 delays before exiting. */
++		exit(222);
++	}
++  } else {
++	/* Child 1. */
++	exit(111);			/* child 1 exits immediately */
++  }
++
++}
++
++void test2f()
++{
++/* test getpid, getppid, getuid, etc. */
++
++  pid_t pid, pid1, ppid, cpid, stat_loc, err;
++
++  subtest = 6;
++  errno = -2000;
++  err = 0;
++  pid = getpid();
++  if ( (pid1 = fork())) {
++	/* Parent.  Do nothing. */
++	if (wait(&stat_loc) != pid1) e(1);
++	if (WEXITSTATUS(stat_loc) != (pid1 & 0377)) e(2);
++  } else {
++	/* Child.  Get ppid. */
++	cpid = getpid();
++	ppid = getppid();
++	if (ppid != pid) err = 3;
++	if (cpid == ppid) err = 4;
++	exit(cpid & 0377);
++  }
++  if (err != 0) e(err);
++}
++
++void test2g()
++{
++/* test time(), times() */
++
++  time_t t1, t2;
++  clock_t t3, t4;
++  struct tms tmsbuf;
++
++  subtest = 7;
++  errno = -7000;
++
++  /* First time(). */
++  t1 = -1;
++  t2 = -2;
++  t1 = time(&t2);
++  if (t1 < 650000000L) e(1);	/* 650000000 is Sept. 1990 */
++  if (t1 != t2) e(2);
++  t1 = -1;
++  t1 = time( (time_t *) NULL);
++  if (t1 < 650000000L) e(3);
++  t3 = times(&tmsbuf);
++  sleep(1);
++  t2 = time( (time_t *) NULL);
++  if (t2 < 0L) e(4);
++  if (t2 - t1 < 1) e(5);
++
++  /* Now times(). */
++  t4 = times(&tmsbuf);
++  if ( t4 == (clock_t) -1) e(6);
++  if (t4 - t3 < CLOCKS_PER_SEC) e(7);
++  if (tmsbuf.tms_utime < 0) e(8);
++  if (tmsbuf.tms_stime < 0) e(9);
++  if (tmsbuf.tms_cutime < 0) e(10);
++  if (tmsbuf.tms_cstime < 0) e(11);
++}
++
++void sigpip(s)
++int s;				/* for ANSI */
++{
++  sigct++;
++  cumsig++;
++}
++
++void quit()
++{
++
++  chdir("..");
++  system("rm -rf DIR*");
++
++  if (errct == 0) {
++	printf("ok\n");
++	exit(0);
++  } else {
++	printf("%d errors\n", errct);
++	exit(4);
++  }
++}
++
++void e(n)
++int n;
++{
++  int err_num = errno;		/* save errno in case printf clobbers it */
++
++  printf("Subtest %d,  error %d  errno=%d  ", subtest, n, errno);
++  errno = err_num;		/* restore errno, just in case */
++  perror("");
++  if (errct++ > MAX_ERROR) {
++	printf("Too many errors;  test aborted\n");
++	chdir("..");
++	system("rm -rf DIR*");
++	exit(1);
+   }
+-  printf("all child terminated!\n");
+-  return 0;
+ }

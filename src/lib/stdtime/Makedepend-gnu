@@ -1,0 +1,7 @@
+depend-gnu:
+	rm .depend-gnu
+	touch .depend-gnu
+	mkdep 'gcc -D_MINIX -D_POSIX_SOURCE -D__USG -I../../commands/zoneinfo -E' ftime.c | sed -e '/<built-in>/d' -e '/<command line>/d' -e 's:^\(.\):../obj-gnu/./stdtime/\1:' >> .depend-gnu
+	mkdep 'gcc -D_MINIX -D_POSIX_SOURCE -D__USG -I../../commands/zoneinfo -E' asctime.c | sed -e '/<built-in>/d' -e '/<command line>/d' -e 's:^\(.\):../obj-gnu/./stdtime/\1:' >> .depend-gnu
+	mkdep 'gcc -D_MINIX -D_POSIX_SOURCE -D__USG -I../../commands/zoneinfo -E' localtime.c | sed -e '/<built-in>/d' -e '/<command line>/d' -e 's:^\(.\):../obj-gnu/./stdtime/\1:' >> .depend-gnu
+	mkdep 'gcc -D_MINIX -D_POSIX_SOURCE -D__USG -I../../commands/zoneinfo -E' strftime.c | sed -e '/<built-in>/d' -e '/<command line>/d' -e 's:^\(.\):../obj-gnu/./stdtime/\1:' >> .depend-gnu

@@ -1,0 +1,6 @@
+depend-ack:
+	rm .depend-ack
+	touch .depend-ack
+	mkdep 'cc -O -D_MINIX -D_POSIX_SOURCE -E' ftok.c | sed -e 's:^\(.\):../obj-ack/./sysvipc/\1:' >> .depend-ack
+	mkdep 'cc -O -D_MINIX -D_POSIX_SOURCE -E' sem.c | sed -e 's:^\(.\):../obj-ack/./sysvipc/\1:' >> .depend-ack
+	mkdep 'cc -O -D_MINIX -D_POSIX_SOURCE -E' shm.c | sed -e 's:^\(.\):../obj-ack/./sysvipc/\1:' >> .depend-ack

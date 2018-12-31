@@ -1,0 +1,11 @@
+depend-ack:
+	rm .depend-ack
+	touch .depend-ack
+	mkdep 'cc -O -D_MINIX -D_POSIX_SOURCE -E' arch_compare.c | sed -e 's:^\(.\):../../obj-ack/./i386/math/\1:' >> .depend-ack
+	mkdep 'cc -O -D_MINIX -D_POSIX_SOURCE -E' arch_round.c | sed -e 's:^\(.\):../../obj-ack/./i386/math/\1:' >> .depend-ack
+	mkdep 'cc -O -D_MINIX -D_POSIX_SOURCE -E' fpu_cw.s | sed -e 's:^\(.\):../../obj-ack/./i386/math/\1:' >> .depend-ack
+	mkdep 'cc -O -D_MINIX -D_POSIX_SOURCE -E' fpu_sw.s | sed -e 's:^\(.\):../../obj-ack/./i386/math/\1:' >> .depend-ack
+	mkdep 'cc -O -D_MINIX -D_POSIX_SOURCE -E' fpu_round.s | sed -e 's:^\(.\):../../obj-ack/./i386/math/\1:' >> .depend-ack
+	mkdep 'cc -O -D_MINIX -D_POSIX_SOURCE -E' fegetround.c | sed -e 's:^\(.\):../../obj-ack/./i386/math/\1:' >> .depend-ack
+	mkdep 'cc -O -D_MINIX -D_POSIX_SOURCE -E' feholdexcept.c | sed -e 's:^\(.\):../../obj-ack/./i386/math/\1:' >> .depend-ack
+	mkdep 'cc -O -D_MINIX -D_POSIX_SOURCE -E' fesetround.c | sed -e 's:^\(.\):../../obj-ack/./i386/math/\1:' >> .depend-ack

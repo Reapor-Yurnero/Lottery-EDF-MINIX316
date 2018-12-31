@@ -1,0 +1,7 @@
+depend-ack:
+	rm .depend-ack
+	touch .depend-ack
+	mkdep 'cc -D_MINIX -D_POSIX_SOURCE -D__USG -I../../commands/zoneinfo -E' ftime.c | sed -e 's:^\(.\):../obj-ack/./stdtime/\1:' >> .depend-ack
+	mkdep 'cc -D_MINIX -D_POSIX_SOURCE -D__USG -I../../commands/zoneinfo -E' asctime.c | sed -e 's:^\(.\):../obj-ack/./stdtime/\1:' >> .depend-ack
+	mkdep 'cc -D_MINIX -D_POSIX_SOURCE -D__USG -I../../commands/zoneinfo -E' localtime.c | sed -e 's:^\(.\):../obj-ack/./stdtime/\1:' >> .depend-ack
+	mkdep 'cc -D_MINIX -D_POSIX_SOURCE -D__USG -I../../commands/zoneinfo -E' strftime.c | sed -e 's:^\(.\):../obj-ack/./stdtime/\1:' >> .depend-ack

@@ -1,0 +1,740 @@
+# 1 "klib386.S"
+
+
+.text; .data; .data; .bss
+# 3 "/usr/include/minix/config.h"
+# 3 "/usr/include/minix/sys_config.h"
+# 43 "/usr/include/minix/sys_config.h"
+# 48 "/usr/include/minix/sys_config.h"
+# 53 "/usr/include/minix/sys_config.h"
+# 61 "/usr/include/minix/sys_config.h"
+# 65 "/usr/include/minix/sys_config.h"
+# 69 "/usr/include/minix/sys_config.h"
+# 24 "/usr/include/minix/config.h"
+# 1 "/usr/include/minix/const.h"
+# 5 "/usr/include/minix/const.h"
+# 81 "/usr/include/minix/const.h"
+# 103 "/usr/include/minix/const.h"
+# 1 "/usr/include/ibm/interrupt.h"
+# 59 "/usr/include/ibm/interrupt.h"
+# 1 "include/archconst.h"
+# 1 "/usr/include/ibm/interrupt.h"
+# 7 "/usr/include/ibm/memory.h"
+# 7 "include/archconst.h"
+# 146 "include/archconst.h"
+# 1 "./../../const.h"
+# 3 "/usr/include/minix/bitmap.h"
+# 7 "./../../const.h"
+# 3 "./../../config.h"
+# 3 "./../../debug.h"
+# 19 "/usr/include/ansi.h"
+# 31 "/usr/include/ansi.h"
+# 56 "/usr/include/ansi.h"
+# 60 "/usr/include/ansi.h"
+# 71 "/usr/include/ansi.h"
+# 3 "/usr/include/minix/debug.h"
+# 11 "/usr/include/minix/debug.h"
+# 65 "./../../config.h"
+# 13 "./../../debug.h"
+# 43 "./../../debug.h"
+# 55 "./../../debug.h"
+# 64 "./../../debug.h"
+# 71 "./../../debug.h"
+# 77 "./../../debug.h"
+# 82 "./../../debug.h"
+# 88 "./../../debug.h"
+# 10 "./../../const.h"
+# 27 "./../../const.h"
+# 43 "./../../const.h"
+# 3 "./sconst.h"
+# 1 "./../../const.h"
+# 5 "./sconst.h"
+
+
+	W =   4
+
+
+	P_STACKBASE = 0
+	GSREG = P_STACKBASE
+	FSREG = GSREG+2
+	ESREG = FSREG+2
+	DSREG = ESREG+2
+	DIREG = DSREG+2
+	SIREG = DIREG+W
+	BPREG = SIREG+W
+	STREG = BPREG+W
+	BXREG = STREG+W
+	DXREG = BXREG+W
+	CXREG = DXREG+W
+	AXREG = CXREG+W
+	RETADR = AXREG+W
+	PCREG = RETADR+W
+	CSREG = PCREG+W
+	PSWREG = CSREG+W
+	SPREG = PSWREG+W
+	SSREG = SPREG+W
+	P_STACKTOP = SSREG+W
+	FP_SAVE_AREA_P = P_STACKTOP
+	P_LDT_SEL = FP_SAVE_AREA_P + 532
+	P_CR3 = P_LDT_SEL+W
+	P_LDT = P_CR3+W
+	P_MISC_FLAGS = P_LDT + 50
+	Msize = 9
+# 53 "./sconst.h"
+# 73 "./sconst.h"
+# 79 "./sconst.h"
+# 85 "./sconst.h"
+# 97 "./sconst.h"
+# 105 "./sconst.h"
+# 113 "./sconst.h"
+# 137 "./sconst.h"
+# 143 "./sconst.h"
+# 11 "klib386.S"
+
+
+
+
+
+
+.globl	monitor
+.globl	int86
+.globl	exit
+.globl	_exit
+.globl	__exit
+.globl	__main
+.globl	phys_insw
+.globl	phys_insb
+.globl	phys_outsw
+.globl	phys_outsb
+.globl	phys_copy
+.globl	phys_copy_fault
+.globl	phys_copy_fault_in_kernel
+.globl	phys_memset
+.globl	mem_rdw
+.globl	reset
+.globl	halt_cpu
+.globl	level0
+.globl	read_cpu_flags
+.globl	read_cr0
+.globl	read_cr2
+.globl	getcr3val
+.globl	write_cr0
+.globl	read_cr4
+.globl  thecr3
+.globl	write_cr4
+
+.globl	catch_pagefaults
+.globl	read_ds
+.globl  read_cs
+.globl	read_ss
+.globl	idt_reload
+
+.globl	fninit
+.globl	fnstsw
+.globl	fnstcw
+
+
+
+
+
+
+
+.text
+
+
+
+
+
+
+monitor:
+	movl	mon_sp, %esp
+	movw	$  5  *  8  , %dx
+	mov	%dx, %ds
+	mov	%dx, %es
+	mov	%dx, %fs
+	mov	%dx, %gs
+	mov	%dx, %ss
+	pop	%edi
+	pop	%esi
+	pop	%ebp
+	lretw
+
+
+
+
+
+
+int86:
+	cmpb	$0, mon_return
+	jne	0f
+	movb	$0x01, %ah
+	movb	%ah, reg86+0
+	movb	%ah, reg86+13
+	ret
+0:
+	push	%ebp
+	push	%esi
+	push	%edi
+	push	%ebx
+	pushf
+	cli
+
+	inb	$ 0xA1
+	movb	%al, %ah
+	inb	$ 0x21
+	push	%eax
+	movl	irq_use, %eax
+	and	$~(1<< 0 ), %eax
+	outb	$ 0x21
+	movb	%ah, %al
+	outb	$ 0xA1
+
+	mov	$  5  *  8  , %eax
+	mov	%ax, %ss
+	xchgl	mon_sp, %esp
+	push	reg86+36
+	push	reg86+32
+	push	reg86+28
+	push	reg86+24
+	push	reg86+20
+	push	reg86+16
+	push	reg86+12
+	push	reg86+8
+	push	reg86+4
+	push	reg86+0
+	mov	%ax, %ds
+	mov	%ax, %es
+	mov	%ax, %fs
+	mov	%ax, %gs
+	push	%cs
+	push	$return
+        ljmpw    *20+2*4+10*4+2*4(%esp)
+return:
+	pop	reg86+0
+	pop	reg86+4
+	pop	reg86+8
+	pop	reg86+12
+	pop	reg86+16
+	pop	reg86+20
+	pop	reg86+24
+	pop	reg86+28
+	pop	reg86+32
+	pop	reg86+36
+	lgdt	gdt+  1  *  8
+        ljmp    $  6  *  8  , $csinit
+csinit:
+	mov	$  3  *  8  , %eax
+	mov	%ax, %ds
+	mov	%ax, %es
+	mov	%ax, %fs
+	mov	%ax, %gs
+	mov	%ax, %ss
+	xchgl	mon_sp, %esp
+	lidt	gdt+  2  *  8
+# 183 "klib386.S"
+
+	pop	%eax
+	outb	$ 0x21
+	movb	%ah, %al
+	outb	$ 0xA1
+
+6:
+	addl	%ecx, lost_ticks
+
+	popf
+	pop	%ebx
+	pop	%edi
+	pop	%esi
+	pop	%ebp
+	ret
+
+
+
+
+
+
+
+
+
+
+
+exit:
+_exit:
+__exit:
+	sti
+	jmp	__exit
+
+__main:
+	ret
+
+
+
+
+
+
+
+
+
+
+phys_insw:
+	push	%ebp
+	mov	%esp, %ebp
+	cld
+	push	%edi
+	push	%es
+
+	mov	$   4  *  8   |  1  , %ecx
+	mov	%cx, %es
+	mov	8(%ebp), %edx
+	mov	12(%ebp), %edi
+	mov	16(%ebp), %ecx
+	shr	$1, %ecx
+	rep insw
+	pop	%es
+	pop	%edi
+	pop	%ebp
+	ret
+
+
+
+
+
+
+
+
+
+
+phys_insb:
+	push	%ebp
+	mov	%esp, %ebp
+	cld
+	push	%edi
+	push	%es
+
+	mov	$   4  *  8   |  1  , %ecx
+	mov	%cx, %es
+	mov	8(%ebp), %edx
+	mov	12(%ebp), %edi
+	mov	16(%ebp), %ecx
+	rep insb
+	pop	%es
+	pop	%edi
+	pop	%ebp
+	ret
+
+
+
+
+
+
+
+
+
+
+.balign	16
+phys_outsw:
+	push	%ebp
+	mov	%esp, %ebp
+	cld
+	push	%esi
+	push	%ds
+
+	mov	$   4  *  8   |  1  , %ecx
+	mov	%cx, %ds
+	mov	8(%ebp), %edx
+	mov	12(%ebp), %esi
+	mov	16(%ebp), %ecx
+	shr	$1, %ecx
+	rep outsw
+	pop	%ds
+	pop	%esi
+	pop	%ebp
+	ret
+
+
+
+
+
+
+
+
+
+
+.balign	16
+phys_outsb:
+	push	%ebp
+	mov	%esp, %ebp
+	cld
+	push	%esi
+	push	%ds
+
+	mov	$   4  *  8   |  1  , %ecx
+	mov	%cx, %ds
+	mov	8(%ebp), %edx
+	mov	12(%ebp), %esi
+	mov	16(%ebp), %ecx
+	rep outsb
+	pop	%ds
+	pop	%esi
+	pop	%ebp
+	ret
+
+
+
+
+
+
+
+
+
+
+
+	PC_ARGS = 4+4+4+4
+
+
+.balign	16
+phys_copy:
+	cld
+	push	%esi
+	push	%edi
+	push	%es
+
+	mov	$   4  *  8   |  1  , %eax
+	mov	%ax, %es
+
+	mov	PC_ARGS(%esp), %esi
+	mov	PC_ARGS+4(%esp), %edi
+	mov	PC_ARGS+4+4(%esp), %eax
+
+	cmp	$10, %eax
+	jb	pc_small
+	mov	%esi, %ecx
+	neg	%ecx
+	and	$3, %ecx
+	sub	%ecx, %eax
+
+	rep 	movsb %es:(%esi), %es:(%edi)
+	mov	%eax, %ecx
+	shr	$2, %ecx
+
+	rep 	movsl %es:(%esi), %es:(%edi)
+	and	$3, %eax
+pc_small:
+	xchg	%eax, %ecx
+
+	rep 	movsb %es:(%esi), %es:(%edi)
+
+	mov	$0, %eax
+phys_copy_fault:
+	pop	%es
+	pop	%edi
+	pop	%esi
+	ret
+
+phys_copy_fault_in_kernel:
+	pop	%es
+	pop	%edi
+	pop	%esi
+	mov	%cr2, %eax
+	ret
+
+
+
+
+
+
+
+
+
+
+.balign	16
+phys_memset:
+	push	%ebp
+	mov	%esp, %ebp
+	push	%esi
+	push	%ebx
+	push	%ds
+
+	mov	8(%ebp), %esi
+	mov	16(%ebp), %eax
+	mov	$   4  *  8   |  1  , %ebx
+	mov	%bx, %ds
+	mov	12(%ebp), %ebx
+	shr	$2, %eax
+fill_start:
+	mov	%ebx, (%esi)
+	add	$4, %esi
+	dec	%eax
+	jne	fill_start
+
+	mov	16(%ebp), %eax
+	and	$3, %eax
+remain_fill:
+	cmp	$0, %eax
+	je	fill_done
+	movb	12(%ebp), %bl
+	movb	%bl, (%esi)
+	add	$1, %esi
+	inc	%ebp
+	dec	%eax
+	jmp	remain_fill
+fill_done:
+	pop	%ds
+	pop	%ebx
+	pop	%esi
+	pop	%ebp
+	ret
+
+
+
+
+
+
+
+
+
+
+.balign	16
+mem_rdw:
+	mov	%ds, %cx
+	mov	4(%esp), %ds
+	mov	4+4(%esp), %eax
+	movzwl	(%eax), %eax
+	mov	%cx, %ds
+	ret
+
+
+
+
+
+
+
+
+
+
+reset:
+	lidt	idt_zero
+	int	$3
+.data
+idt_zero:
+.long	0, 0
+.text
+
+
+
+
+
+
+
+
+
+
+halt_cpu:
+	sti
+	hlt
+	cli
+	ret
+
+
+
+
+
+
+
+
+
+level0:
+	
+
+	mov	%cs, %ax
+	cmpw	$  6  *  8  , %ax
+	jne	0f
+
+
+	mov	4(%esp), %eax
+	call	*%eax
+	ret
+
+
+
+0:
+	mov	4(%esp), %eax
+	int	$ 34
+	ret
+
+
+
+
+
+
+
+
+.balign	16
+read_cpu_flags:
+	pushf
+	mov	(%esp), %eax
+	add	$4, %esp
+	ret
+
+read_ds:
+	mov	$0, %eax
+	mov	%ds, %ax
+	ret
+
+read_cs:
+	mov	$0, %eax
+	mov	%cs, %ax
+	ret
+
+read_ss:
+	mov	$0, %eax
+	mov	%ss, %ax
+	ret
+
+
+
+
+
+fninit:
+	fninit
+	ret
+
+fnstsw:
+	xor     %eax, %eax
+
+
+	fnstsw	%ax
+	ret
+
+fnstcw:
+	push    %eax
+	mov     8(%esp), %eax
+
+
+	fnstcw	(%eax)
+	pop     %eax
+	ret
+
+
+
+
+
+read_cr0:
+	push	%ebp
+	mov	%esp, %ebp
+	mov	%cr0, %eax
+	pop	%ebp
+	ret
+
+
+
+
+
+write_cr0:
+	push	%ebp
+	mov	%esp, %ebp
+	mov	8(%ebp), %eax
+	mov	%eax, %cr0
+	jmp	0f
+0:
+	pop	%ebp
+	ret
+
+
+
+
+
+read_cr2:
+	mov	%cr2, %eax
+	ret
+
+
+
+
+
+read_cr4:
+	push	%ebp
+	mov	%esp, %ebp
+
+
+	mov	%cr4, %eax
+	pop	%ebp
+	ret
+
+
+
+
+
+write_cr4:
+	push	%ebp
+	mov	%esp, %ebp
+	mov	8(%ebp), %eax
+
+
+	mov	%eax, %cr4
+	jmp	0f
+0:
+	pop	%ebp
+	ret
+
+
+
+
+getcr3val:
+	mov	%cr3, %eax
+	mov	%eax, thecr3
+	ret
+
+
+
+
+
+
+.globl ia32_msr_read
+ia32_msr_read:
+	push	%ebp
+	mov	%esp, %ebp
+
+	mov	8(%ebp), %ecx
+	rdmsr
+	mov	12(%ebp), %ecx
+	mov	%edx, (%ecx)
+	mov	16(%ebp), %ecx
+	mov	%eax, (%ecx)
+
+	pop	%ebp
+	ret
+
+
+
+
+
+
+.globl ia32_msr_write
+ia32_msr_write:
+	push	%ebp
+	mov	%esp, %ebp
+
+	mov	12(%ebp), %edx
+	mov	16(%ebp), %eax
+	mov	8(%ebp), %ecx
+	wrmsr
+
+	pop	%ebp
+	ret
+
+
+
+
+
+.balign	16
+idt_reload:
+	lidt	gdt+  2  *  8
+	ret
+# 690 "klib386.S"
+
+.globl reload_ds
+reload_ds:
+	 mov %ds , %ax ; mov %ax, %ds  ;
+	ret
+

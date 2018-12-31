@@ -1,0 +1,477 @@
+# 1 "apic_asm.S"
+# 1 "include/archconst.h"
+# 1 "/usr/include/ibm/interrupt.h"
+# 59 "/usr/include/ibm/interrupt.h"
+# 7 "/usr/include/ibm/memory.h"
+# 7 "include/archconst.h"
+# 146 "include/archconst.h"
+# 3 "./apic.h"
+# 159 "./apic.h"
+# 3 "./sconst.h"
+# 1 "./../../const.h"
+# 3 "/usr/include/minix/config.h"
+# 3 "/usr/include/minix/sys_config.h"
+# 43 "/usr/include/minix/sys_config.h"
+# 48 "/usr/include/minix/sys_config.h"
+# 53 "/usr/include/minix/sys_config.h"
+# 61 "/usr/include/minix/sys_config.h"
+# 65 "/usr/include/minix/sys_config.h"
+# 69 "/usr/include/minix/sys_config.h"
+# 24 "/usr/include/minix/config.h"
+# 3 "/usr/include/minix/bitmap.h"
+# 7 "./../../const.h"
+# 3 "./../../config.h"
+# 3 "./../../debug.h"
+# 19 "/usr/include/ansi.h"
+# 31 "/usr/include/ansi.h"
+# 56 "/usr/include/ansi.h"
+# 60 "/usr/include/ansi.h"
+# 71 "/usr/include/ansi.h"
+# 3 "/usr/include/minix/debug.h"
+# 11 "/usr/include/minix/debug.h"
+# 65 "./../../config.h"
+# 13 "./../../debug.h"
+# 43 "./../../debug.h"
+# 55 "./../../debug.h"
+# 64 "./../../debug.h"
+# 71 "./../../debug.h"
+# 77 "./../../debug.h"
+# 82 "./../../debug.h"
+# 88 "./../../debug.h"
+# 10 "./../../const.h"
+# 27 "./../../const.h"
+# 43 "./../../const.h"
+# 5 "./sconst.h"
+
+
+	W =   4
+
+
+	P_STACKBASE = 0
+	GSREG = P_STACKBASE
+	FSREG = GSREG+2
+	ESREG = FSREG+2
+	DSREG = ESREG+2
+	DIREG = DSREG+2
+	SIREG = DIREG+W
+	BPREG = SIREG+W
+	STREG = BPREG+W
+	BXREG = STREG+W
+	DXREG = BXREG+W
+	CXREG = DXREG+W
+	AXREG = CXREG+W
+	RETADR = AXREG+W
+	PCREG = RETADR+W
+	CSREG = PCREG+W
+	PSWREG = CSREG+W
+	SPREG = PSWREG+W
+	SSREG = SPREG+W
+	P_STACKTOP = SSREG+W
+	FP_SAVE_AREA_P = P_STACKTOP
+	P_LDT_SEL = FP_SAVE_AREA_P + 532
+	P_CR3 = P_LDT_SEL+W
+	P_LDT = P_CR3+W
+	P_MISC_FLAGS = P_LDT + 50
+	Msize = 9
+# 53 "./sconst.h"
+# 73 "./sconst.h"
+# 79 "./sconst.h"
+# 85 "./sconst.h"
+# 97 "./sconst.h"
+# 105 "./sconst.h"
+# 113 "./sconst.h"
+# 137 "./sconst.h"
+# 143 "./sconst.h"
+# 3 "./apic_asm.h"
+# 30 "./apic_asm.h"
+# 41 "./apic_asm.h"
+# 5 "apic_asm.S"
+
+.globl	apic_hwint00
+.globl	apic_hwint01
+.globl	apic_hwint02
+.globl	apic_hwint03
+.globl	apic_hwint04
+.globl	apic_hwint05
+.globl	apic_hwint06
+.globl	apic_hwint07
+.globl	apic_hwint08
+.globl	apic_hwint09
+.globl	apic_hwint10
+.globl	apic_hwint11
+.globl	apic_hwint12
+.globl	apic_hwint13
+.globl	apic_hwint14
+.globl	apic_hwint15
+# 30 "apic_asm.S"
+# 48 "apic_asm.S"
+
+
+.balign	16
+apic_hwint00:
+
+	  cmpl $  6  *  8  , 4 (%esp) ; je  0f  ;  ;   push %ebp ; ; movl ( 20  + 4 + 0 )(%esp), %ebp ; ;  mov %ds, %ss:DSREG(%ebp ) ; mov %es, %ss:ESREG(%ebp ) ; mov %fs, %ss:FSREG(%ebp ) ; mov %gs, %ss:GSREG(%ebp ) ;  ;  mov %eax, %ss:AXREG(%ebp ) ; mov %ecx, %ss:CXREG(%ebp ) ; mov %edx, %ss:DXREG(%ebp ) ; mov %ebx, %ss:BXREG(%ebp ) ; mov %esi, %ss:SIREG(%ebp ) ; mov %edi, %ss:DIREG(%ebp ) ;  ; pop %esi ; mov %esi, %ss:BPREG(%ebp) ;  mov %ss, %si ; mov %si, %ds ; mov %si, %es ; movw $0, %si ; mov %si, %gs ; mov %si, %fs ;  ;  movl (0 + 0 )(%esp),  %esi  ; movl  %esi , PCREG( %ebp ) ; movl (4 + 0 )(%esp),  %esi  ; movl  %esi , CSREG( %ebp ) ; movl (8 + 0 )(%esp),  %esi  ; movl  %esi , PSWREG( %ebp ) ; movl (12 + 0 )(%esp),  %esi  ; movl  %esi , SPREG( %ebp ) ; movl  %esi , STREG( %ebp ) ; movl (16 + 0 )(%esp),  %esi  ; movl  %esi , SSREG( %ebp ) ;  ;  ; push %ebp ; call lazy_fpu ; add $4, %esp ;  ; movl $0, %ebp ;  push $0  ; call irq_handle ; add $4, %esp ; mov lapic_eoi_addr, %eax ; movl $0, (%eax) ;  ; jmp restart ; 0: pusha ;  push $0  ; call irq_handle ; add $4, %esp ; mov lapic_eoi_addr, %eax ; movl $0, (%eax) ;  ; popa ; iret ;
+
+.balign	16
+apic_hwint01:
+
+	  cmpl $  6  *  8  , 4 (%esp) ; je  0f  ;  ;   push %ebp ; ; movl ( 20  + 4 + 0 )(%esp), %ebp ; ;  mov %ds, %ss:DSREG(%ebp ) ; mov %es, %ss:ESREG(%ebp ) ; mov %fs, %ss:FSREG(%ebp ) ; mov %gs, %ss:GSREG(%ebp ) ;  ;  mov %eax, %ss:AXREG(%ebp ) ; mov %ecx, %ss:CXREG(%ebp ) ; mov %edx, %ss:DXREG(%ebp ) ; mov %ebx, %ss:BXREG(%ebp ) ; mov %esi, %ss:SIREG(%ebp ) ; mov %edi, %ss:DIREG(%ebp ) ;  ; pop %esi ; mov %esi, %ss:BPREG(%ebp) ;  mov %ss, %si ; mov %si, %ds ; mov %si, %es ; movw $0, %si ; mov %si, %gs ; mov %si, %fs ;  ;  movl (0 + 0 )(%esp),  %esi  ; movl  %esi , PCREG( %ebp ) ; movl (4 + 0 )(%esp),  %esi  ; movl  %esi , CSREG( %ebp ) ; movl (8 + 0 )(%esp),  %esi  ; movl  %esi , PSWREG( %ebp ) ; movl (12 + 0 )(%esp),  %esi  ; movl  %esi , SPREG( %ebp ) ; movl  %esi , STREG( %ebp ) ; movl (16 + 0 )(%esp),  %esi  ; movl  %esi , SSREG( %ebp ) ;  ;  ; push %ebp ; call lazy_fpu ; add $4, %esp ;  ; movl $0, %ebp ;  push $1  ; call irq_handle ; add $4, %esp ; mov lapic_eoi_addr, %eax ; movl $0, (%eax) ;  ; jmp restart ; 0: pusha ;  push $1  ; call irq_handle ; add $4, %esp ; mov lapic_eoi_addr, %eax ; movl $0, (%eax) ;  ; popa ; iret ;
+
+.balign	16
+apic_hwint02:
+
+	  cmpl $  6  *  8  , 4 (%esp) ; je  0f  ;  ;   push %ebp ; ; movl ( 20  + 4 + 0 )(%esp), %ebp ; ;  mov %ds, %ss:DSREG(%ebp ) ; mov %es, %ss:ESREG(%ebp ) ; mov %fs, %ss:FSREG(%ebp ) ; mov %gs, %ss:GSREG(%ebp ) ;  ;  mov %eax, %ss:AXREG(%ebp ) ; mov %ecx, %ss:CXREG(%ebp ) ; mov %edx, %ss:DXREG(%ebp ) ; mov %ebx, %ss:BXREG(%ebp ) ; mov %esi, %ss:SIREG(%ebp ) ; mov %edi, %ss:DIREG(%ebp ) ;  ; pop %esi ; mov %esi, %ss:BPREG(%ebp) ;  mov %ss, %si ; mov %si, %ds ; mov %si, %es ; movw $0, %si ; mov %si, %gs ; mov %si, %fs ;  ;  movl (0 + 0 )(%esp),  %esi  ; movl  %esi , PCREG( %ebp ) ; movl (4 + 0 )(%esp),  %esi  ; movl  %esi , CSREG( %ebp ) ; movl (8 + 0 )(%esp),  %esi  ; movl  %esi , PSWREG( %ebp ) ; movl (12 + 0 )(%esp),  %esi  ; movl  %esi , SPREG( %ebp ) ; movl  %esi , STREG( %ebp ) ; movl (16 + 0 )(%esp),  %esi  ; movl  %esi , SSREG( %ebp ) ;  ;  ; push %ebp ; call lazy_fpu ; add $4, %esp ;  ; movl $0, %ebp ;  push $2  ; call irq_handle ; add $4, %esp ; mov lapic_eoi_addr, %eax ; movl $0, (%eax) ;  ; jmp restart ; 0: pusha ;  push $2  ; call irq_handle ; add $4, %esp ; mov lapic_eoi_addr, %eax ; movl $0, (%eax) ;  ; popa ; iret ;
+
+.balign	16
+apic_hwint03:
+
+	  cmpl $  6  *  8  , 4 (%esp) ; je  0f  ;  ;   push %ebp ; ; movl ( 20  + 4 + 0 )(%esp), %ebp ; ;  mov %ds, %ss:DSREG(%ebp ) ; mov %es, %ss:ESREG(%ebp ) ; mov %fs, %ss:FSREG(%ebp ) ; mov %gs, %ss:GSREG(%ebp ) ;  ;  mov %eax, %ss:AXREG(%ebp ) ; mov %ecx, %ss:CXREG(%ebp ) ; mov %edx, %ss:DXREG(%ebp ) ; mov %ebx, %ss:BXREG(%ebp ) ; mov %esi, %ss:SIREG(%ebp ) ; mov %edi, %ss:DIREG(%ebp ) ;  ; pop %esi ; mov %esi, %ss:BPREG(%ebp) ;  mov %ss, %si ; mov %si, %ds ; mov %si, %es ; movw $0, %si ; mov %si, %gs ; mov %si, %fs ;  ;  movl (0 + 0 )(%esp),  %esi  ; movl  %esi , PCREG( %ebp ) ; movl (4 + 0 )(%esp),  %esi  ; movl  %esi , CSREG( %ebp ) ; movl (8 + 0 )(%esp),  %esi  ; movl  %esi , PSWREG( %ebp ) ; movl (12 + 0 )(%esp),  %esi  ; movl  %esi , SPREG( %ebp ) ; movl  %esi , STREG( %ebp ) ; movl (16 + 0 )(%esp),  %esi  ; movl  %esi , SSREG( %ebp ) ;  ;  ; push %ebp ; call lazy_fpu ; add $4, %esp ;  ; movl $0, %ebp ;  push $3  ; call irq_handle ; add $4, %esp ; mov lapic_eoi_addr, %eax ; movl $0, (%eax) ;  ; jmp restart ; 0: pusha ;  push $3  ; call irq_handle ; add $4, %esp ; mov lapic_eoi_addr, %eax ; movl $0, (%eax) ;  ; popa ; iret ;
+
+.balign	16
+apic_hwint04:
+
+	  cmpl $  6  *  8  , 4 (%esp) ; je  0f  ;  ;   push %ebp ; ; movl ( 20  + 4 + 0 )(%esp), %ebp ; ;  mov %ds, %ss:DSREG(%ebp ) ; mov %es, %ss:ESREG(%ebp ) ; mov %fs, %ss:FSREG(%ebp ) ; mov %gs, %ss:GSREG(%ebp ) ;  ;  mov %eax, %ss:AXREG(%ebp ) ; mov %ecx, %ss:CXREG(%ebp ) ; mov %edx, %ss:DXREG(%ebp ) ; mov %ebx, %ss:BXREG(%ebp ) ; mov %esi, %ss:SIREG(%ebp ) ; mov %edi, %ss:DIREG(%ebp ) ;  ; pop %esi ; mov %esi, %ss:BPREG(%ebp) ;  mov %ss, %si ; mov %si, %ds ; mov %si, %es ; movw $0, %si ; mov %si, %gs ; mov %si, %fs ;  ;  movl (0 + 0 )(%esp),  %esi  ; movl  %esi , PCREG( %ebp ) ; movl (4 + 0 )(%esp),  %esi  ; movl  %esi , CSREG( %ebp ) ; movl (8 + 0 )(%esp),  %esi  ; movl  %esi , PSWREG( %ebp ) ; movl (12 + 0 )(%esp),  %esi  ; movl  %esi , SPREG( %ebp ) ; movl  %esi , STREG( %ebp ) ; movl (16 + 0 )(%esp),  %esi  ; movl  %esi , SSREG( %ebp ) ;  ;  ; push %ebp ; call lazy_fpu ; add $4, %esp ;  ; movl $0, %ebp ;  push $4  ; call irq_handle ; add $4, %esp ; mov lapic_eoi_addr, %eax ; movl $0, (%eax) ;  ; jmp restart ; 0: pusha ;  push $4  ; call irq_handle ; add $4, %esp ; mov lapic_eoi_addr, %eax ; movl $0, (%eax) ;  ; popa ; iret ;
+
+.balign	16
+apic_hwint05:
+
+	  cmpl $  6  *  8  , 4 (%esp) ; je  0f  ;  ;   push %ebp ; ; movl ( 20  + 4 + 0 )(%esp), %ebp ; ;  mov %ds, %ss:DSREG(%ebp ) ; mov %es, %ss:ESREG(%ebp ) ; mov %fs, %ss:FSREG(%ebp ) ; mov %gs, %ss:GSREG(%ebp ) ;  ;  mov %eax, %ss:AXREG(%ebp ) ; mov %ecx, %ss:CXREG(%ebp ) ; mov %edx, %ss:DXREG(%ebp ) ; mov %ebx, %ss:BXREG(%ebp ) ; mov %esi, %ss:SIREG(%ebp ) ; mov %edi, %ss:DIREG(%ebp ) ;  ; pop %esi ; mov %esi, %ss:BPREG(%ebp) ;  mov %ss, %si ; mov %si, %ds ; mov %si, %es ; movw $0, %si ; mov %si, %gs ; mov %si, %fs ;  ;  movl (0 + 0 )(%esp),  %esi  ; movl  %esi , PCREG( %ebp ) ; movl (4 + 0 )(%esp),  %esi  ; movl  %esi , CSREG( %ebp ) ; movl (8 + 0 )(%esp),  %esi  ; movl  %esi , PSWREG( %ebp ) ; movl (12 + 0 )(%esp),  %esi  ; movl  %esi , SPREG( %ebp ) ; movl  %esi , STREG( %ebp ) ; movl (16 + 0 )(%esp),  %esi  ; movl  %esi , SSREG( %ebp ) ;  ;  ; push %ebp ; call lazy_fpu ; add $4, %esp ;  ; movl $0, %ebp ;  push $5  ; call irq_handle ; add $4, %esp ; mov lapic_eoi_addr, %eax ; movl $0, (%eax) ;  ; jmp restart ; 0: pusha ;  push $5  ; call irq_handle ; add $4, %esp ; mov lapic_eoi_addr, %eax ; movl $0, (%eax) ;  ; popa ; iret ;
+
+.balign	16
+apic_hwint06:
+
+	  cmpl $  6  *  8  , 4 (%esp) ; je  0f  ;  ;   push %ebp ; ; movl ( 20  + 4 + 0 )(%esp), %ebp ; ;  mov %ds, %ss:DSREG(%ebp ) ; mov %es, %ss:ESREG(%ebp ) ; mov %fs, %ss:FSREG(%ebp ) ; mov %gs, %ss:GSREG(%ebp ) ;  ;  mov %eax, %ss:AXREG(%ebp ) ; mov %ecx, %ss:CXREG(%ebp ) ; mov %edx, %ss:DXREG(%ebp ) ; mov %ebx, %ss:BXREG(%ebp ) ; mov %esi, %ss:SIREG(%ebp ) ; mov %edi, %ss:DIREG(%ebp ) ;  ; pop %esi ; mov %esi, %ss:BPREG(%ebp) ;  mov %ss, %si ; mov %si, %ds ; mov %si, %es ; movw $0, %si ; mov %si, %gs ; mov %si, %fs ;  ;  movl (0 + 0 )(%esp),  %esi  ; movl  %esi , PCREG( %ebp ) ; movl (4 + 0 )(%esp),  %esi  ; movl  %esi , CSREG( %ebp ) ; movl (8 + 0 )(%esp),  %esi  ; movl  %esi , PSWREG( %ebp ) ; movl (12 + 0 )(%esp),  %esi  ; movl  %esi , SPREG( %ebp ) ; movl  %esi , STREG( %ebp ) ; movl (16 + 0 )(%esp),  %esi  ; movl  %esi , SSREG( %ebp ) ;  ;  ; push %ebp ; call lazy_fpu ; add $4, %esp ;  ; movl $0, %ebp ;  push $6  ; call irq_handle ; add $4, %esp ; mov lapic_eoi_addr, %eax ; movl $0, (%eax) ;  ; jmp restart ; 0: pusha ;  push $6  ; call irq_handle ; add $4, %esp ; mov lapic_eoi_addr, %eax ; movl $0, (%eax) ;  ; popa ; iret ;
+
+.balign	16
+apic_hwint07:
+
+	  cmpl $  6  *  8  , 4 (%esp) ; je  0f  ;  ;   push %ebp ; ; movl ( 20  + 4 + 0 )(%esp), %ebp ; ;  mov %ds, %ss:DSREG(%ebp ) ; mov %es, %ss:ESREG(%ebp ) ; mov %fs, %ss:FSREG(%ebp ) ; mov %gs, %ss:GSREG(%ebp ) ;  ;  mov %eax, %ss:AXREG(%ebp ) ; mov %ecx, %ss:CXREG(%ebp ) ; mov %edx, %ss:DXREG(%ebp ) ; mov %ebx, %ss:BXREG(%ebp ) ; mov %esi, %ss:SIREG(%ebp ) ; mov %edi, %ss:DIREG(%ebp ) ;  ; pop %esi ; mov %esi, %ss:BPREG(%ebp) ;  mov %ss, %si ; mov %si, %ds ; mov %si, %es ; movw $0, %si ; mov %si, %gs ; mov %si, %fs ;  ;  movl (0 + 0 )(%esp),  %esi  ; movl  %esi , PCREG( %ebp ) ; movl (4 + 0 )(%esp),  %esi  ; movl  %esi , CSREG( %ebp ) ; movl (8 + 0 )(%esp),  %esi  ; movl  %esi , PSWREG( %ebp ) ; movl (12 + 0 )(%esp),  %esi  ; movl  %esi , SPREG( %ebp ) ; movl  %esi , STREG( %ebp ) ; movl (16 + 0 )(%esp),  %esi  ; movl  %esi , SSREG( %ebp ) ;  ;  ; push %ebp ; call lazy_fpu ; add $4, %esp ;  ; movl $0, %ebp ;  push $7  ; call irq_handle ; add $4, %esp ; mov lapic_eoi_addr, %eax ; movl $0, (%eax) ;  ; jmp restart ; 0: pusha ;  push $7  ; call irq_handle ; add $4, %esp ; mov lapic_eoi_addr, %eax ; movl $0, (%eax) ;  ; popa ; iret ;
+
+.balign	16
+apic_hwint08:
+
+	  cmpl $  6  *  8  , 4 (%esp) ; je  0f  ;  ;   push %ebp ; ; movl ( 20  + 4 + 0 )(%esp), %ebp ; ;  mov %ds, %ss:DSREG(%ebp ) ; mov %es, %ss:ESREG(%ebp ) ; mov %fs, %ss:FSREG(%ebp ) ; mov %gs, %ss:GSREG(%ebp ) ;  ;  mov %eax, %ss:AXREG(%ebp ) ; mov %ecx, %ss:CXREG(%ebp ) ; mov %edx, %ss:DXREG(%ebp ) ; mov %ebx, %ss:BXREG(%ebp ) ; mov %esi, %ss:SIREG(%ebp ) ; mov %edi, %ss:DIREG(%ebp ) ;  ; pop %esi ; mov %esi, %ss:BPREG(%ebp) ;  mov %ss, %si ; mov %si, %ds ; mov %si, %es ; movw $0, %si ; mov %si, %gs ; mov %si, %fs ;  ;  movl (0 + 0 )(%esp),  %esi  ; movl  %esi , PCREG( %ebp ) ; movl (4 + 0 )(%esp),  %esi  ; movl  %esi , CSREG( %ebp ) ; movl (8 + 0 )(%esp),  %esi  ; movl  %esi , PSWREG( %ebp ) ; movl (12 + 0 )(%esp),  %esi  ; movl  %esi , SPREG( %ebp ) ; movl  %esi , STREG( %ebp ) ; movl (16 + 0 )(%esp),  %esi  ; movl  %esi , SSREG( %ebp ) ;  ;  ; push %ebp ; call lazy_fpu ; add $4, %esp ;  ; movl $0, %ebp ;  push $8  ; call irq_handle ; add $4, %esp ; mov lapic_eoi_addr, %eax ; movl $0, (%eax) ;  ; jmp restart ; 0: pusha ;  push $8  ; call irq_handle ; add $4, %esp ; mov lapic_eoi_addr, %eax ; movl $0, (%eax) ;  ; popa ; iret ;
+
+.balign	16
+apic_hwint09:
+
+	  cmpl $  6  *  8  , 4 (%esp) ; je  0f  ;  ;   push %ebp ; ; movl ( 20  + 4 + 0 )(%esp), %ebp ; ;  mov %ds, %ss:DSREG(%ebp ) ; mov %es, %ss:ESREG(%ebp ) ; mov %fs, %ss:FSREG(%ebp ) ; mov %gs, %ss:GSREG(%ebp ) ;  ;  mov %eax, %ss:AXREG(%ebp ) ; mov %ecx, %ss:CXREG(%ebp ) ; mov %edx, %ss:DXREG(%ebp ) ; mov %ebx, %ss:BXREG(%ebp ) ; mov %esi, %ss:SIREG(%ebp ) ; mov %edi, %ss:DIREG(%ebp ) ;  ; pop %esi ; mov %esi, %ss:BPREG(%ebp) ;  mov %ss, %si ; mov %si, %ds ; mov %si, %es ; movw $0, %si ; mov %si, %gs ; mov %si, %fs ;  ;  movl (0 + 0 )(%esp),  %esi  ; movl  %esi , PCREG( %ebp ) ; movl (4 + 0 )(%esp),  %esi  ; movl  %esi , CSREG( %ebp ) ; movl (8 + 0 )(%esp),  %esi  ; movl  %esi , PSWREG( %ebp ) ; movl (12 + 0 )(%esp),  %esi  ; movl  %esi , SPREG( %ebp ) ; movl  %esi , STREG( %ebp ) ; movl (16 + 0 )(%esp),  %esi  ; movl  %esi , SSREG( %ebp ) ;  ;  ; push %ebp ; call lazy_fpu ; add $4, %esp ;  ; movl $0, %ebp ;  push $9  ; call irq_handle ; add $4, %esp ; mov lapic_eoi_addr, %eax ; movl $0, (%eax) ;  ; jmp restart ; 0: pusha ;  push $9  ; call irq_handle ; add $4, %esp ; mov lapic_eoi_addr, %eax ; movl $0, (%eax) ;  ; popa ; iret ;
+
+.balign	16
+apic_hwint10:
+
+	  cmpl $  6  *  8  , 4 (%esp) ; je  0f  ;  ;   push %ebp ; ; movl ( 20  + 4 + 0 )(%esp), %ebp ; ;  mov %ds, %ss:DSREG(%ebp ) ; mov %es, %ss:ESREG(%ebp ) ; mov %fs, %ss:FSREG(%ebp ) ; mov %gs, %ss:GSREG(%ebp ) ;  ;  mov %eax, %ss:AXREG(%ebp ) ; mov %ecx, %ss:CXREG(%ebp ) ; mov %edx, %ss:DXREG(%ebp ) ; mov %ebx, %ss:BXREG(%ebp ) ; mov %esi, %ss:SIREG(%ebp ) ; mov %edi, %ss:DIREG(%ebp ) ;  ; pop %esi ; mov %esi, %ss:BPREG(%ebp) ;  mov %ss, %si ; mov %si, %ds ; mov %si, %es ; movw $0, %si ; mov %si, %gs ; mov %si, %fs ;  ;  movl (0 + 0 )(%esp),  %esi  ; movl  %esi , PCREG( %ebp ) ; movl (4 + 0 )(%esp),  %esi  ; movl  %esi , CSREG( %ebp ) ; movl (8 + 0 )(%esp),  %esi  ; movl  %esi , PSWREG( %ebp ) ; movl (12 + 0 )(%esp),  %esi  ; movl  %esi , SPREG( %ebp ) ; movl  %esi , STREG( %ebp ) ; movl (16 + 0 )(%esp),  %esi  ; movl  %esi , SSREG( %ebp ) ;  ;  ; push %ebp ; call lazy_fpu ; add $4, %esp ;  ; movl $0, %ebp ;  push $10  ; call irq_handle ; add $4, %esp ; mov lapic_eoi_addr, %eax ; movl $0, (%eax) ;  ; jmp restart ; 0: pusha ;  push $10  ; call irq_handle ; add $4, %esp ; mov lapic_eoi_addr, %eax ; movl $0, (%eax) ;  ; popa ; iret ;
+
+.balign	16
+apic_hwint11:
+
+	  cmpl $  6  *  8  , 4 (%esp) ; je  0f  ;  ;   push %ebp ; ; movl ( 20  + 4 + 0 )(%esp), %ebp ; ;  mov %ds, %ss:DSREG(%ebp ) ; mov %es, %ss:ESREG(%ebp ) ; mov %fs, %ss:FSREG(%ebp ) ; mov %gs, %ss:GSREG(%ebp ) ;  ;  mov %eax, %ss:AXREG(%ebp ) ; mov %ecx, %ss:CXREG(%ebp ) ; mov %edx, %ss:DXREG(%ebp ) ; mov %ebx, %ss:BXREG(%ebp ) ; mov %esi, %ss:SIREG(%ebp ) ; mov %edi, %ss:DIREG(%ebp ) ;  ; pop %esi ; mov %esi, %ss:BPREG(%ebp) ;  mov %ss, %si ; mov %si, %ds ; mov %si, %es ; movw $0, %si ; mov %si, %gs ; mov %si, %fs ;  ;  movl (0 + 0 )(%esp),  %esi  ; movl  %esi , PCREG( %ebp ) ; movl (4 + 0 )(%esp),  %esi  ; movl  %esi , CSREG( %ebp ) ; movl (8 + 0 )(%esp),  %esi  ; movl  %esi , PSWREG( %ebp ) ; movl (12 + 0 )(%esp),  %esi  ; movl  %esi , SPREG( %ebp ) ; movl  %esi , STREG( %ebp ) ; movl (16 + 0 )(%esp),  %esi  ; movl  %esi , SSREG( %ebp ) ;  ;  ; push %ebp ; call lazy_fpu ; add $4, %esp ;  ; movl $0, %ebp ;  push $11  ; call irq_handle ; add $4, %esp ; mov lapic_eoi_addr, %eax ; movl $0, (%eax) ;  ; jmp restart ; 0: pusha ;  push $11  ; call irq_handle ; add $4, %esp ; mov lapic_eoi_addr, %eax ; movl $0, (%eax) ;  ; popa ; iret ;
+
+.balign	16
+apic_hwint12:
+
+	  cmpl $  6  *  8  , 4 (%esp) ; je  0f  ;  ;   push %ebp ; ; movl ( 20  + 4 + 0 )(%esp), %ebp ; ;  mov %ds, %ss:DSREG(%ebp ) ; mov %es, %ss:ESREG(%ebp ) ; mov %fs, %ss:FSREG(%ebp ) ; mov %gs, %ss:GSREG(%ebp ) ;  ;  mov %eax, %ss:AXREG(%ebp ) ; mov %ecx, %ss:CXREG(%ebp ) ; mov %edx, %ss:DXREG(%ebp ) ; mov %ebx, %ss:BXREG(%ebp ) ; mov %esi, %ss:SIREG(%ebp ) ; mov %edi, %ss:DIREG(%ebp ) ;  ; pop %esi ; mov %esi, %ss:BPREG(%ebp) ;  mov %ss, %si ; mov %si, %ds ; mov %si, %es ; movw $0, %si ; mov %si, %gs ; mov %si, %fs ;  ;  movl (0 + 0 )(%esp),  %esi  ; movl  %esi , PCREG( %ebp ) ; movl (4 + 0 )(%esp),  %esi  ; movl  %esi , CSREG( %ebp ) ; movl (8 + 0 )(%esp),  %esi  ; movl  %esi , PSWREG( %ebp ) ; movl (12 + 0 )(%esp),  %esi  ; movl  %esi , SPREG( %ebp ) ; movl  %esi , STREG( %ebp ) ; movl (16 + 0 )(%esp),  %esi  ; movl  %esi , SSREG( %ebp ) ;  ;  ; push %ebp ; call lazy_fpu ; add $4, %esp ;  ; movl $0, %ebp ;  push $12  ; call irq_handle ; add $4, %esp ; mov lapic_eoi_addr, %eax ; movl $0, (%eax) ;  ; jmp restart ; 0: pusha ;  push $12  ; call irq_handle ; add $4, %esp ; mov lapic_eoi_addr, %eax ; movl $0, (%eax) ;  ; popa ; iret ;
+
+.balign	16
+apic_hwint13:
+
+	  cmpl $  6  *  8  , 4 (%esp) ; je  0f  ;  ;   push %ebp ; ; movl ( 20  + 4 + 0 )(%esp), %ebp ; ;  mov %ds, %ss:DSREG(%ebp ) ; mov %es, %ss:ESREG(%ebp ) ; mov %fs, %ss:FSREG(%ebp ) ; mov %gs, %ss:GSREG(%ebp ) ;  ;  mov %eax, %ss:AXREG(%ebp ) ; mov %ecx, %ss:CXREG(%ebp ) ; mov %edx, %ss:DXREG(%ebp ) ; mov %ebx, %ss:BXREG(%ebp ) ; mov %esi, %ss:SIREG(%ebp ) ; mov %edi, %ss:DIREG(%ebp ) ;  ; pop %esi ; mov %esi, %ss:BPREG(%ebp) ;  mov %ss, %si ; mov %si, %ds ; mov %si, %es ; movw $0, %si ; mov %si, %gs ; mov %si, %fs ;  ;  movl (0 + 0 )(%esp),  %esi  ; movl  %esi , PCREG( %ebp ) ; movl (4 + 0 )(%esp),  %esi  ; movl  %esi , CSREG( %ebp ) ; movl (8 + 0 )(%esp),  %esi  ; movl  %esi , PSWREG( %ebp ) ; movl (12 + 0 )(%esp),  %esi  ; movl  %esi , SPREG( %ebp ) ; movl  %esi , STREG( %ebp ) ; movl (16 + 0 )(%esp),  %esi  ; movl  %esi , SSREG( %ebp ) ;  ;  ; push %ebp ; call lazy_fpu ; add $4, %esp ;  ; movl $0, %ebp ;  push $13  ; call irq_handle ; add $4, %esp ; mov lapic_eoi_addr, %eax ; movl $0, (%eax) ;  ; jmp restart ; 0: pusha ;  push $13  ; call irq_handle ; add $4, %esp ; mov lapic_eoi_addr, %eax ; movl $0, (%eax) ;  ; popa ; iret ;
+
+.balign	16
+apic_hwint14:
+
+	  cmpl $  6  *  8  , 4 (%esp) ; je  0f  ;  ;   push %ebp ; ; movl ( 20  + 4 + 0 )(%esp), %ebp ; ;  mov %ds, %ss:DSREG(%ebp ) ; mov %es, %ss:ESREG(%ebp ) ; mov %fs, %ss:FSREG(%ebp ) ; mov %gs, %ss:GSREG(%ebp ) ;  ;  mov %eax, %ss:AXREG(%ebp ) ; mov %ecx, %ss:CXREG(%ebp ) ; mov %edx, %ss:DXREG(%ebp ) ; mov %ebx, %ss:BXREG(%ebp ) ; mov %esi, %ss:SIREG(%ebp ) ; mov %edi, %ss:DIREG(%ebp ) ;  ; pop %esi ; mov %esi, %ss:BPREG(%ebp) ;  mov %ss, %si ; mov %si, %ds ; mov %si, %es ; movw $0, %si ; mov %si, %gs ; mov %si, %fs ;  ;  movl (0 + 0 )(%esp),  %esi  ; movl  %esi , PCREG( %ebp ) ; movl (4 + 0 )(%esp),  %esi  ; movl  %esi , CSREG( %ebp ) ; movl (8 + 0 )(%esp),  %esi  ; movl  %esi , PSWREG( %ebp ) ; movl (12 + 0 )(%esp),  %esi  ; movl  %esi , SPREG( %ebp ) ; movl  %esi , STREG( %ebp ) ; movl (16 + 0 )(%esp),  %esi  ; movl  %esi , SSREG( %ebp ) ;  ;  ; push %ebp ; call lazy_fpu ; add $4, %esp ;  ; movl $0, %ebp ;  push $14  ; call irq_handle ; add $4, %esp ; mov lapic_eoi_addr, %eax ; movl $0, (%eax) ;  ; jmp restart ; 0: pusha ;  push $14  ; call irq_handle ; add $4, %esp ; mov lapic_eoi_addr, %eax ; movl $0, (%eax) ;  ; popa ; iret ;
+
+.balign	16
+apic_hwint15:
+
+	  cmpl $  6  *  8  , 4 (%esp) ; je  0f  ;  ;   push %ebp ; ; movl ( 20  + 4 + 0 )(%esp), %ebp ; ;  mov %ds, %ss:DSREG(%ebp ) ; mov %es, %ss:ESREG(%ebp ) ; mov %fs, %ss:FSREG(%ebp ) ; mov %gs, %ss:GSREG(%ebp ) ;  ;  mov %eax, %ss:AXREG(%ebp ) ; mov %ecx, %ss:CXREG(%ebp ) ; mov %edx, %ss:DXREG(%ebp ) ; mov %ebx, %ss:BXREG(%ebp ) ; mov %esi, %ss:SIREG(%ebp ) ; mov %edi, %ss:DIREG(%ebp ) ;  ; pop %esi ; mov %esi, %ss:BPREG(%ebp) ;  mov %ss, %si ; mov %si, %ds ; mov %si, %es ; movw $0, %si ; mov %si, %gs ; mov %si, %fs ;  ;  movl (0 + 0 )(%esp),  %esi  ; movl  %esi , PCREG( %ebp ) ; movl (4 + 0 )(%esp),  %esi  ; movl  %esi , CSREG( %ebp ) ; movl (8 + 0 )(%esp),  %esi  ; movl  %esi , PSWREG( %ebp ) ; movl (12 + 0 )(%esp),  %esi  ; movl  %esi , SPREG( %ebp ) ; movl  %esi , STREG( %ebp ) ; movl (16 + 0 )(%esp),  %esi  ; movl  %esi , SSREG( %ebp ) ;  ;  ; push %ebp ; call lazy_fpu ; add $4, %esp ;  ; movl $0, %ebp ;  push $15  ; call irq_handle ; add $4, %esp ; mov lapic_eoi_addr, %eax ; movl $0, (%eax) ;  ; jmp restart ; 0: pusha ;  push $15  ; call irq_handle ; add $4, %esp ; mov lapic_eoi_addr, %eax ; movl $0, (%eax) ;  ; popa ; iret ;
+# 136 "apic_asm.S"
+# 154 "apic_asm.S"
+
+
+.globl lapic_bsp_timer_int_handler
+lapic_bsp_timer_int_handler:
+	  cmpl $  6  *  8  , 4 (%esp) ; je  0f  ;  ;   push %ebp ; ; movl ( 20  + 4 + 0 )(%esp), %ebp ; ;  mov %ds, %ss:DSREG(%ebp ) ; mov %es, %ss:ESREG(%ebp ) ; mov %fs, %ss:FSREG(%ebp ) ; mov %gs, %ss:GSREG(%ebp ) ;  ;  mov %eax, %ss:AXREG(%ebp ) ; mov %ecx, %ss:CXREG(%ebp ) ; mov %edx, %ss:DXREG(%ebp ) ; mov %ebx, %ss:BXREG(%ebp ) ; mov %esi, %ss:SIREG(%ebp ) ; mov %edi, %ss:DIREG(%ebp ) ;  ; pop %esi ; mov %esi, %ss:BPREG(%ebp) ;  mov %ss, %si ; mov %si, %ds ; mov %si, %es ; movw $0, %si ; mov %si, %gs ; mov %si, %fs ;  ;  movl (0 + 0 )(%esp),  %esi  ; movl  %esi , PCREG( %ebp ) ; movl (4 + 0 )(%esp),  %esi  ; movl  %esi , CSREG( %ebp ) ; movl (8 + 0 )(%esp),  %esi  ; movl  %esi , PSWREG( %ebp ) ; movl (12 + 0 )(%esp),  %esi  ; movl  %esi , SPREG( %ebp ) ; movl  %esi , STREG( %ebp ) ; movl (16 + 0 )(%esp),  %esi  ; movl  %esi , SSREG( %ebp ) ;  ;  ; push %ebp ; call lazy_fpu ; add $4, %esp ;  ; movl $0, %ebp ;  movl $bsp_timer_int_handler , %eax ; call *%eax ; mov lapic_eoi_addr, %eax ; movl $0, (%eax) ;  ; jmp restart ; 0: pusha ;  movl $bsp_timer_int_handler , %eax ; call *%eax ; mov lapic_eoi_addr, %eax ; movl $0, (%eax) ;  ; popa ; iret ;
+
+.globl lapic_ap_timer_int_handler
+lapic_ap_timer_int_handler:
+	  cmpl $  6  *  8  , 4 (%esp) ; je  0f  ;  ;   push %ebp ; ; movl ( 20  + 4 + 0 )(%esp), %ebp ; ;  mov %ds, %ss:DSREG(%ebp ) ; mov %es, %ss:ESREG(%ebp ) ; mov %fs, %ss:FSREG(%ebp ) ; mov %gs, %ss:GSREG(%ebp ) ;  ;  mov %eax, %ss:AXREG(%ebp ) ; mov %ecx, %ss:CXREG(%ebp ) ; mov %edx, %ss:DXREG(%ebp ) ; mov %ebx, %ss:BXREG(%ebp ) ; mov %esi, %ss:SIREG(%ebp ) ; mov %edi, %ss:DIREG(%ebp ) ;  ; pop %esi ; mov %esi, %ss:BPREG(%ebp) ;  mov %ss, %si ; mov %si, %ds ; mov %si, %es ; movw $0, %si ; mov %si, %gs ; mov %si, %fs ;  ;  movl (0 + 0 )(%esp),  %esi  ; movl  %esi , PCREG( %ebp ) ; movl (4 + 0 )(%esp),  %esi  ; movl  %esi , CSREG( %ebp ) ; movl (8 + 0 )(%esp),  %esi  ; movl  %esi , PSWREG( %ebp ) ; movl (12 + 0 )(%esp),  %esi  ; movl  %esi , SPREG( %ebp ) ; movl  %esi , STREG( %ebp ) ; movl (16 + 0 )(%esp),  %esi  ; movl  %esi , SSREG( %ebp ) ;  ;  ; push %ebp ; call lazy_fpu ; add $4, %esp ;  ; movl $0, %ebp ;  movl $ap_timer_int_handler , %eax ; call *%eax ; mov lapic_eoi_addr, %eax ; movl $0, (%eax) ;  ; jmp restart ; 0: pusha ;  movl $ap_timer_int_handler , %eax ; call *%eax ; mov lapic_eoi_addr, %eax ; movl $0, (%eax) ;  ; popa ; iret ;
+
+
+
+.data
+lapic_intr_dummy_handler_msg:
+.ascii "UNHABLED APIC interrupt vector %d\n"
+
+.text
+# 177 "apic_asm.S"
+# 181 "apic_asm.S"
+
+.globl lapic_intr_dummy_handles_start
+lapic_intr_dummy_handles_start:
+
+ .balign  32 ; lapic_intr_dummy_handler_0:  pushl $0 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_1:  pushl $1 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_2:  pushl $2 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_3:  pushl $3 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_4:  pushl $4 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_5:  pushl $5 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_6:  pushl $6 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_7:  pushl $7 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_8:  pushl $8 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_9:  pushl $9 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_10:  pushl $10 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_11:  pushl $11 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_12:  pushl $12 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_13:  pushl $13 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_14:  pushl $14 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_15:  pushl $15 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_16:  pushl $16 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_17:  pushl $17 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_18:  pushl $18 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_19:  pushl $19 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_20:  pushl $20 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_21:  pushl $21 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_22:  pushl $22 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_23:  pushl $23 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_24:  pushl $24 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_25:  pushl $25 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_26:  pushl $26 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_27:  pushl $27 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_28:  pushl $28 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_29:  pushl $29 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_30:  pushl $30 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_31:  pushl $31 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_32:  pushl $32 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_33:  pushl $33 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_34:  pushl $34 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_35:  pushl $35 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_36:  pushl $36 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_37:  pushl $37 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_38:  pushl $38 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_39:  pushl $39 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_40:  pushl $40 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_41:  pushl $41 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_42:  pushl $42 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_43:  pushl $43 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_44:  pushl $44 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_45:  pushl $45 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_46:  pushl $46 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_47:  pushl $47 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_48:  pushl $48 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_49:  pushl $49 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_50:  pushl $50 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_51:  pushl $51 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_52:  pushl $52 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_53:  pushl $53 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_54:  pushl $54 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_55:  pushl $55 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_56:  pushl $56 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_57:  pushl $57 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_58:  pushl $58 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_59:  pushl $59 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_60:  pushl $60 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_61:  pushl $61 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_62:  pushl $62 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_63:  pushl $63 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_64:  pushl $64 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_65:  pushl $65 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_66:  pushl $66 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_67:  pushl $67 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_68:  pushl $68 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_69:  pushl $69 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_70:  pushl $70 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_71:  pushl $71 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_72:  pushl $72 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_73:  pushl $73 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_74:  pushl $74 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_75:  pushl $75 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_76:  pushl $76 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_77:  pushl $77 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_78:  pushl $78 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_79:  pushl $79 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_80:  pushl $80 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_81:  pushl $81 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_82:  pushl $82 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_83:  pushl $83 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_84:  pushl $84 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_85:  pushl $85 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_86:  pushl $86 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_87:  pushl $87 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_88:  pushl $88 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_89:  pushl $89 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_90:  pushl $90 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_91:  pushl $91 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_92:  pushl $92 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_93:  pushl $93 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_94:  pushl $94 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_95:  pushl $95 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_96:  pushl $96 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_97:  pushl $97 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_98:  pushl $98 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_99:  pushl $99 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_100:  pushl $100 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_101:  pushl $101 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_102:  pushl $102 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_103:  pushl $103 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_104:  pushl $104 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_105:  pushl $105 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_106:  pushl $106 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_107:  pushl $107 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_108:  pushl $108 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_109:  pushl $109 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_110:  pushl $110 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_111:  pushl $111 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_112:  pushl $112 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_113:  pushl $113 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_114:  pushl $114 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_115:  pushl $115 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_116:  pushl $116 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_117:  pushl $117 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_118:  pushl $118 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_119:  pushl $119 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_120:  pushl $120 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_121:  pushl $121 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_122:  pushl $122 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_123:  pushl $123 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_124:  pushl $124 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_125:  pushl $125 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_126:  pushl $126 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_127:  pushl $127 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_128:  pushl $128 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_129:  pushl $129 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_130:  pushl $130 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_131:  pushl $131 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_132:  pushl $132 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_133:  pushl $133 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_134:  pushl $134 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_135:  pushl $135 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_136:  pushl $136 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_137:  pushl $137 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_138:  pushl $138 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_139:  pushl $139 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_140:  pushl $140 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_141:  pushl $141 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_142:  pushl $142 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_143:  pushl $143 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_144:  pushl $144 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_145:  pushl $145 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_146:  pushl $146 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_147:  pushl $147 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_148:  pushl $148 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_149:  pushl $149 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_150:  pushl $150 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_151:  pushl $151 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_152:  pushl $152 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_153:  pushl $153 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_154:  pushl $154 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_155:  pushl $155 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_156:  pushl $156 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_157:  pushl $157 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_158:  pushl $158 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_159:  pushl $159 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_160:  pushl $160 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_161:  pushl $161 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_162:  pushl $162 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_163:  pushl $163 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_164:  pushl $164 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_165:  pushl $165 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_166:  pushl $166 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_167:  pushl $167 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_168:  pushl $168 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_169:  pushl $169 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_170:  pushl $170 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_171:  pushl $171 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_172:  pushl $172 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_173:  pushl $173 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_174:  pushl $174 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_175:  pushl $175 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_176:  pushl $176 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_177:  pushl $177 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_178:  pushl $178 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_179:  pushl $179 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_180:  pushl $180 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_181:  pushl $181 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_182:  pushl $182 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_183:  pushl $183 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_184:  pushl $184 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_185:  pushl $185 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_186:  pushl $186 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_187:  pushl $187 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_188:  pushl $188 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_189:  pushl $189 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_190:  pushl $190 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_191:  pushl $191 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_192:  pushl $192 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_193:  pushl $193 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_194:  pushl $194 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_195:  pushl $195 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_196:  pushl $196 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_197:  pushl $197 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_198:  pushl $198 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_199:  pushl $199 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_200:  pushl $200 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_201:  pushl $201 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_202:  pushl $202 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_203:  pushl $203 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_204:  pushl $204 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_205:  pushl $205 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_206:  pushl $206 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_207:  pushl $207 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_208:  pushl $208 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_209:  pushl $209 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_210:  pushl $210 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_211:  pushl $211 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_212:  pushl $212 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_213:  pushl $213 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_214:  pushl $214 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_215:  pushl $215 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_216:  pushl $216 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_217:  pushl $217 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_218:  pushl $218 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_219:  pushl $219 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_220:  pushl $220 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_221:  pushl $221 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_222:  pushl $222 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_223:  pushl $223 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_224:  pushl $224 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_225:  pushl $225 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_226:  pushl $226 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_227:  pushl $227 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_228:  pushl $228 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_229:  pushl $229 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_230:  pushl $230 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_231:  pushl $231 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_232:  pushl $232 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_233:  pushl $233 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_234:  pushl $234 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_235:  pushl $235 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_236:  pushl $236 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_237:  pushl $237 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_238:  pushl $238 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_239:  pushl $239 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_240:  pushl $240 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_241:  pushl $241 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_242:  pushl $242 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_243:  pushl $243 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_244:  pushl $244 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_245:  pushl $245 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_246:  pushl $246 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_247:  pushl $247 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_248:  pushl $248 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_249:  pushl $249 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_250:  pushl $250 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_251:  pushl $251 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_252:  pushl $252 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_253:  pushl $253 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_254:  pushl $254 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+ .balign  32 ; lapic_intr_dummy_handler_255:  pushl $255 ; push $lapic_intr_dummy_handler_msg; call kprintf; 1: jmp 1b;
+
+.globl lapic_intr_dummy_handles_end
+lapic_intr_dummy_handles_end:
+
+
+
+
+
